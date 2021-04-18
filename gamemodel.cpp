@@ -1,6 +1,7 @@
 #include "gamemodel.h"
 
 #include <QRandomGenerator>
+#include <QGraphicsSimpleTextItem>
 
 void GameModel::makeMap()
 {
@@ -30,7 +31,7 @@ void GameModel::addItemsGroups()
                 int i=QRandomGenerator::global()->bounded(26);
                 s.push_back(static_cast<QChar>('a'+i));
             }
-            auto item = this->addSimpleText(s);
+            auto item = addSimpleText(s);
             item->setPos(i*50,j*50);
         }
     }

@@ -4,7 +4,8 @@
 #include <QWidget>
 #include <QKeyEvent>
 
-class QTcpSocket;
+class Network;
+class NetworkSystem;
 
 class GameModel;
 class GameView;
@@ -27,8 +28,14 @@ private:
     GameView  *view;
 
     KeyboardInput *kb;
-    QTcpSocket *client;
+    Network *client;
+    NetworkSystem *netSys;
 
+
+    void addMyself(const QString &playerName);
+    void addPlayer(const QString &id,const QString &name,int x,int y);
+    void movePlayer(const QString &name,int x,int y);
+    void handleGameInput(int keyCode);
 };
 
 #endif // GAMEWIDGET_H

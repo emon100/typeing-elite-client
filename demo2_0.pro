@@ -22,16 +22,18 @@ SOURCES += \
     gamewidget.cpp \
     keyboardinput.cpp \
     main.cpp \
-    networkio.cpp \
-    servicelogic.cpp
+    networksystem.cpp \
+    servicelogic.cpp \
+    network.cpp
 
 HEADERS += \
     gamemodel.h \
     gameview.h \
     gamewidget.h \
     keyboardinput.h \
-    networkio.h \
-    servicelogic.h
+    networksystem.h \
+    servicelogic.h \
+    network.h
 
 FORMS +=
 

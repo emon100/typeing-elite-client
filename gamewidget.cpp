@@ -3,10 +3,12 @@
 #include "gamemodel.h"
 
 #include "keyboardinput.h"
+#include "network.h"
+#include "networksystem.h"
 
 #include <QGraphicsSimpleTextItem>
-#include <QtNetwork>
-#include <QLineEdit>
+#include <QRandomGenerator>
+#include <QTimer>
 
 
 
@@ -14,40 +16,18 @@ GameWidget::GameWidget(QWidget *parent):
     QWidget(parent),
     model(new GameModel(this)),
     view(new GameView(model,this)),
-    kb(new KeyboardInput(this))//,client(new QTcpSocket(this))
+    kb(new KeyboardInput(this)),
+    netSys(new NetworkSystem(new Network("localhost", 8888,this),this))
 {
-   // client->connectToHost("localhost",8888);
-    auto scene = model;
-    auto player_me = scene->addSimpleText("aaa");
-    player_me->setPos(10,10);
-    player_me->setRotation(100);
+    initWidget();
 
-    auto player_other = scene->addSimpleText("bbb");
-    player_other->setPos(20,20);
+    auto &player_Name = model->myName = QString("p%1").arg(QRandomGenerator::global()->bounded(1,100000));
+    addMyself(player_Name);
 
-    connect(kb,&KeyboardInput::goodKey,[player_me,nowPos=QPoint{20,20},this]() mutable {
-        this->model->update();
-        auto oldPos = player_me->pos();
+    connect(kb,&KeyboardInput::goodKey,this,&GameWidget::handleGameInput);
 
-        oldPos.rx()+=50;
-        oldPos.ry()+=50;
-        qDebug()<<oldPos;
-        player_me->setPos(oldPos);
-
-        nowPos.rx()+=50;
-        nowPos.ry()+=50;
-        this->view->centerOn(nowPos.x(),nowPos.y());
-    });
-    /*
-    connect(client,&QTcpSocket::readyRead,[player_me=player_other,this](){
-        this->client->write("sjadk\n");
-        qDebug()<<QString(this->client->readAll());
-            auto oldPos = player_me->pos();
-            oldPos.rx()+=50;
-            oldPos.ry()+=50;
-            player_me->setPos(oldPos);
-    });
-    */
+    connect(netSys,&NetworkSystem::addPlayerCommand, this, &GameWidget::addPlayer);
+    connect(netSys,&NetworkSystem::movePlayerCommand,this, &GameWidget::movePlayer);
 }
 
 void GameWidget::initWidget(){
@@ -55,3 +35,59 @@ void GameWidget::initWidget(){
     installEventFilter(kb);
 }
 
+void GameWidget::addMyself(const QString &playerName)
+{
+    netSys->requestConnect(playerName,playerName);
+}
+
+void GameWidget::addPlayer(const QString &id, const QString &name, int x, int y)
+{
+    auto &players = model->players;
+    auto it = players.constFind(id);
+    if(it!=players.cend()){
+        qDebug()<<id<<' '<<name<<' '<<x<<' '<<y;
+    }
+    auto p = players[id] = model->addSimpleText(name);
+    p->setPos(x,y);
+}
+
+void GameWidget::movePlayer(const QString &id, int x, int y)
+{
+    auto &players = model->players;
+    auto it = players.find(id);
+    if(it==players.end()){
+        qDebug()<<id<<' '<<x<<' '<<y;
+    }
+    it.value()->setPos(x,y);
+    if(model->myself){
+        view->centerOn(model->myself->pos());
+    }
+}
+
+void GameWidget::handleGameInput(int keyCode)
+{
+    auto player_me = model->myself;
+    if(player_me==nullptr){
+        model->myself = player_me = model->players[model->myName];
+        if(player_me==nullptr){
+            return ;
+        }
+    }
+    auto pos = player_me->pos();
+    switch(keyCode){
+    case Qt::Key_W:
+            pos.ry()-=10;
+            break;
+    case Qt::Key_A:
+            pos.rx()-=10;
+            break;
+    case Qt::Key_S:
+            pos.ry()+=10;
+            break;
+    case Qt::Key_D:
+            pos.rx()+=10;
+            break;
+    default: return;
+    }
+    netSys->requestMove(int(pos.x()),int(pos.y()));
+}

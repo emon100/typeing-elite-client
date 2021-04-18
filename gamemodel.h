@@ -2,27 +2,29 @@
 #define GAMEMODEL_H
 
 #include <QGraphicsScene>
-#include <QGraphicsSimpleTextItem>
 #include <QVector>
+#include <QHash>
 
 class QGraphicsScene;
+class QGraphicsSimpleTextItem;
 
 class GameModel : public QGraphicsScene
 {
     Q_OBJECT
-
-
-    void makeMap();
-    void addBackground();
-    void addItemsGroups();
-
-    QVector<QVector<QGraphicsSimpleTextItem *>> mapTextLayer;
-
-
 public:
 
     explicit GameModel(QObject *parent = nullptr);
-signals:
+
+    void makeMap();
+
+    QVector<QVector<QGraphicsSimpleTextItem *>> mapTextLayer;
+    QHash<QString,QGraphicsSimpleTextItem *> players;
+
+    QGraphicsSimpleTextItem *myself=nullptr;
+    QString myName;
+
+    void addBackground();
+    void addItemsGroups();
 };
 
 #endif // GAMEMODEL_H

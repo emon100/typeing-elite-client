@@ -4,15 +4,12 @@
 
 #include <QObject>
 #include <QGraphicsView>
-#include "servicelogic.h"
-#include "player.h"
 
 class GameView : public QGraphicsView
 {
     Q_OBJECT
 public:
     GameView(QGraphicsScene *scene,QWidget *parent=nullptr);
-private:
     QGraphicsScene *scene;//GameScene is the representation of model.
 
     QString Set = ":/Logo/Logo/Set.png";

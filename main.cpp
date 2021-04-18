@@ -7,7 +7,15 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    GameWidget w;
-    w.show();
-    return a.exec();
+    bool isServer = false;
+
+    if(isServer){
+
+        return 0;
+    }else{
+        GameWidget w;
+        w.show();
+        return a.exec();
+    }
 }
+
