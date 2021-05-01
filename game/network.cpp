@@ -1,15 +1,10 @@
 #include "network.h"
 
 Network::Network(const QString &host, const int port, QObject *parent):
-    QTcpSocket(parent)
+    QTcpSocket(parent),
+    Having()
 {
     this->connectToHost(host,port);
-    connect(this,&QTcpSocket::connected,[](){
-        qDebug()<<"connected";
-    });
-    connect(this,&QTcpSocket::errorOccurred,[](const QAbstractSocket::SocketError &error){
-        qDebug()<<error;
-    });
     connect(this,&QTcpSocket::readyRead,[this](){
         GetToken(QString(this->readAll()));
     });

@@ -5,10 +5,10 @@ GameMap::GameMap(const int N){    //Generate random map by N
     const int max_len = 10;
     map.reserve(N);
     for(int i=0;i<N;++i){
-        map.emplaceBack();
+        map.push_back(QVector<QString>());
         map.back().reserve(N);
         for(int j=0;j<N;++j){
-            map.back().emplaceBack();
+            map.back().push_back(QString());
             QString &s = map.back().back();
 
             s.reserve(max_len);

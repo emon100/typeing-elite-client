@@ -2,11 +2,10 @@
 #define GAMEMODEL_H
 
 #include <QGraphicsScene>
+#include <QGraphicsSimpleTextItem>
 #include <QVector>
-#include <QHash>
 
 class QGraphicsScene;
-class QGraphicsSimpleTextItem;
 
 class GameModel : public QGraphicsScene
 {
@@ -18,7 +17,8 @@ public:
     void makeMap();
 
     QVector<QVector<QGraphicsSimpleTextItem *>> mapTextLayer;
-    QHash<QString,QGraphicsSimpleTextItem *> players;
+    QMap<QString,QGraphicsSimpleTextItem *> players;
+
 
     QGraphicsSimpleTextItem *myself=nullptr;
     QString myName;

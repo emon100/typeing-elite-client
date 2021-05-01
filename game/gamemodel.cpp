@@ -1,7 +1,7 @@
 #include "gamemodel.h"
-
+#include <QVector>
+#include <QString>
 #include <QRandomGenerator>
-#include <QGraphicsSimpleTextItem>
 
 void GameModel::makeMap()
 {
@@ -22,7 +22,7 @@ void GameModel::addItemsGroups()
     auto & map = mapTextLayer;
     map.reserve(N);
     for(int i=0;i<N;++i){
-        map.emplaceBack();
+        map.push_back(QVector<QGraphicsSimpleTextItem *>());
         map.back().reserve(N);
         for(int j=0;j<N;++j){
             QString s;
@@ -31,8 +31,9 @@ void GameModel::addItemsGroups()
                 int i=QRandomGenerator::global()->bounded(26);
                 s.push_back(static_cast<QChar>('a'+i));
             }
-            auto item = addSimpleText(s);
+            auto item = this->addSimpleText(s);
             item->setPos(i*50,j*50);
+            map.back().push_back(item);
         }
     }
 }

@@ -14,28 +14,39 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
-#DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
+DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    gamemodel.cpp \
-    gameview.cpp \
-    gamewidget.cpp \
-    keyboardinput.cpp \
+    game/gamemap.cpp \
+    game/gamemodel.cpp \
+    game/gameview.cpp \
+    game/gamewidget.cpp \
+    game/keyboardinput.cpp \
+    game/network.cpp \
+    game/networksystem.cpp \
+    mainmenu/loginwindow.cpp \
+    mainmenu/mainwindow.cpp \
+    mainmenu/register.cpp \
+    servicelogic.cpp
     main.cpp \
-    networksystem.cpp \
-    servicelogic.cpp \
-    network.cpp
 
 HEADERS += \
-    gamemodel.h \
-    gameview.h \
-    gamewidget.h \
-    keyboardinput.h \
-    networksystem.h \
-    servicelogic.h \
-    network.h
+    game/gamemap.h \
+    game/gamemodel.h \
+    game/gameview.h \
+    game/gamewidget.h \
+    game/network.h \
+    game/networksystem.h \
+    game/keyboardinput.h \
+    mainmenu/loginwindow.h \
+    mainmenu/mainwindow.h \
+    mainmenu/register.h \
+    servicelogic.h
 
-FORMS +=
+FORMS += \
+    mainmenu/loginwindow.ui \
+    mainmenu/mainwindow.ui \
+    mainmenu/register.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

@@ -5,8 +5,13 @@ bool KeyboardInput::eventFilter(QObject *obj, QEvent *event)
 {
     if(event->type() == QEvent::KeyPress){
         QKeyEvent *e = static_cast<QKeyEvent *>(event);
-        emit goodKey(e->key());
-        return true;
+        if(e->key()>=0x41 && e->key()<=0x5a){
+            emit goodKey(e->key());
+            return true;
+        }else{
+            return QObject::eventFilter(obj, event);
+        }
+
     }else{
         return QObject::eventFilter(obj, event);
     }
