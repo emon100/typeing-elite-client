@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/Logo">
+        <file>Logo/TypeMaster.jpg</file>
+        <file>Logo/BackGround.jpg</file>
+        <file>Logo/Set.png</file>
+        <file>Logo/Male.png</file>
+    </qresource>
+</RCC>

@@ -2,7 +2,6 @@
 #define LOGINWINDOW_H
 
 #include <QWidget>
-#include <gameview.h>
 class GameWidget;
 
 namespace Ui {

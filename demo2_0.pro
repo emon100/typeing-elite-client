@@ -22,20 +22,18 @@ SOURCES += \
     game/gameview.cpp \
     game/gamewidget.cpp \
     game/keyboardinput.cpp \
-    game/network.cpp \
     game/networksystem.cpp \
     mainmenu/loginwindow.cpp \
     mainmenu/mainwindow.cpp \
     mainmenu/register.cpp \
-    servicelogic.cpp
-    main.cpp \
+    servicelogic.cpp \
+    main.cpp
 
 HEADERS += \
     game/gamemap.h \
     game/gamemodel.h \
     game/gameview.h \
     game/gamewidget.h \
-    game/network.h \
     game/networksystem.h \
     game/keyboardinput.h \
     mainmenu/loginwindow.h \

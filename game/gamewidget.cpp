@@ -3,7 +3,6 @@
 #include "gamemodel.h"
 
 #include "keyboardinput.h"
-#include "network.h"
 #include "networksystem.h"
 
 #include <QGraphicsSimpleTextItem>
@@ -17,7 +16,7 @@ GameWidget::GameWidget(QWidget *parent):
     model(new GameModel(this)),
     view(new GameView(model,this)),
     kb(new KeyboardInput(this)),
-    netSys(new NetworkSystem(new Network("localhost", 8888,this),this))
+    netSys(new NetworkSystem("localhost", 8888,this))
 {
     initWidget();
 

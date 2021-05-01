@@ -1,28 +1,27 @@
 #ifndef NETWORKSYSTEM_H
 #define NETWORKSYSTEM_H
 
-#include <QObject>
+#include<QTcpSocket>
 
-class QString;
-class Network;
-
-class NetworkSystem : public QObject
+class NetworkSystem : public QTcpSocket
 {
     Q_OBJECT
 
-    Network *client;
-    void packageIntepreterMain(const QString &pkg);
 
 public:
-    explicit NetworkSystem(Network *client, QObject *parent = nullptr);
+    explicit NetworkSystem(const QString &host, const int port, QObject *parent = nullptr);
 
-    void requestConnect(const QString &playerID, const QString &playerName) const;
+    void requestConnect(const QString &playerID, const QString &playerName);
     void requestMove(int x,int y);
-
 
 signals:
     void addPlayerCommand(QString playerId,QString playerName,int x,int y);
     void movePlayerCommand(QString playerId,int x,int y);
+
+private:
+    void packageIntepreterMain(const QString &pkg);
+    void GetToken(const QString &get);
+    QString Having;
 
 };
 

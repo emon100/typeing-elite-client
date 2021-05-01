@@ -3,7 +3,6 @@
 
 #include <QMainWindow>
 #include "loginwindow.h"
-#include "network.h"
 #include "register.h"
 
 namespace Ui {

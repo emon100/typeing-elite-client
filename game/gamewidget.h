@@ -3,7 +3,6 @@
 
 #include <QWidget>
 #include <QKeyEvent>
-#include <QGraphicsRectItem>
 class Network;
 class NetworkSystem;
 
@@ -11,6 +10,9 @@ class GameModel;
 class GameView;
 class KeyboardInput;
 class NetworkIO;
+class QGraphicsSimpleTextItem;
+class QGraphicsTextItem;
+class QGraphicsRectItem;
 
 class GameWidget : public QWidget
 {
@@ -18,11 +20,12 @@ class GameWidget : public QWidget
 public:
     explicit GameWidget(QWidget *parent=nullptr);
 
-    void addMyself(const QString &playerName);
 
     void handleGameInput(int keyCode);
 private:
     void initWidget();
+    void hit(char c, QGraphicsSimpleTextItem *player_me, int n);
+    void addMyself(const QString &playerName);
 
     GameModel *model;
     GameView  *view;
@@ -39,7 +42,6 @@ private:
 
     QString flag;
     QVector<QGraphicsSimpleTextItem *> hitText;
-    void hit(char c, QGraphicsSimpleTextItem *player_me, int n);
 };
 
 #endif // GAMEWIDGET_H

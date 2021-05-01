@@ -1,5 +1,5 @@
-#include "mainwindow.h"
-#include "gamewidget.h"
+#include "mainmenu/mainwindow.h"
+#include "game/gamewidget.h"
 #include <QtNetwork>
 #include <QApplication>
 #include <iostream>

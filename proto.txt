@@ -1,0 +1,21 @@
+gameserver-gatewayserver protocol = <receiver>:<client-server message>
+
+<receiver>=<emptystr-everyone>|<id>
+
+gatewayserver-client protocol = <id>:<player-message>
+ 
+<id> = <emptystr-world>|<real-id>
+
+message =
+Joined <word-representative> |
+Move <x> <y>
+Map <x-count> <y-count> <words>*x-count*x-count |
+ 
+
+client-gatewayserver protocol = <client-message>
+
+client-message = 
+Join <Auth-info>|
+Move <x> <y>|
+
+

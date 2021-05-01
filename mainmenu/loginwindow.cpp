@@ -1,7 +1,8 @@
 #include "loginwindow.h"
 #include "ui_loginwindow.h"
-#include "gamewidget.h"
-#include "QTimer"
+#include "game/gamewidget.h"
+#include <QTimer>
+#include <QPainter>
 LoginWindow::LoginWindow(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::LoginWindow)
