@@ -21,7 +21,7 @@ public:
 
 
     QGraphicsSimpleTextItem *myself=nullptr;
-    QString myName;
+    QString myId;
 
     void addBackground();
     void addItemsGroups();

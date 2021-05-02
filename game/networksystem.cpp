@@ -11,7 +11,7 @@ NetworkSystem::NetworkSystem(const QString &host, const int port, QObject *paren
     });
 }
 
-void NetworkSystem::requestConnect(const QString &playerID, const QString &)
+void NetworkSystem::requestConnect(const QString &playerID)
 {
     write(playerID.toLatin1().data());
     write("\n",1);
@@ -19,26 +19,26 @@ void NetworkSystem::requestConnect(const QString &playerID, const QString &)
 
 void NetworkSystem::requestMove(int x, int y)
 {
-    write(QString("%2,%3\n").arg(x).arg(y).toLatin1());
+    write(QString("MOVE %2 %3\n").arg(x).arg(y).toLatin1());
 }
 
 void NetworkSystem::packageIntepreterMain(const QString &msg)
-{//TODO: interpreter
+{
     qDebug()<<"NetworkSystem: "<<msg;
     auto sl =  msg.split(':');
     if(sl.size()<2){
         return;
     }
     auto &&sender = sl[0];
-    auto &&instruction = sl[1];
-    if(instruction.contains("Hello")){
-        auto pos = instruction.split(' ')[1].split(',');
-        emit addPlayerCommand(sender, sender, pos[0].toInt(),pos[1].toInt());
-    }else if (instruction.contains("left")){
-       //TODO: emit deletePlayer(sender);
+    auto &&instructions = sl[1].split(' ');
+    if(instructions[0]=="JOIN"){
+        emit addPlayerCommand(sender, instructions[1], instructions[2].toInt(),instructions[3].toInt());
+    }else if (instructions[0] =="LEAVE"){
+        emit deletePlayerCommand(sender);
+    }else if(instructions[0]=="MOVE"){
+        emit movePlayerCommand(sl[0], instructions[1].toInt(),instructions[2].toInt());
     }else{
-        auto pos = instruction.split(',');
-        emit movePlayerCommand(sl[0],pos[0].toInt(),pos[1].toInt());
+        qDebug()<<"Bad msg: "<<msg;
     }
 }
 

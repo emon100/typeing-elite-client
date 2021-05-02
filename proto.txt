@@ -1,21 +1,24 @@
-gameserver-gatewayserver protocol = <receiver>:<client-server message>
+gameserver2gatewayserver protocol = <receiver>:<client-server message>
 
-<receiver>=<emptystr-everyone>|<id>
+<receiver> = <emptystr-everyone>|<id>
 
-gatewayserver-client protocol = <id>:<player-message>
- 
-<id> = <emptystr-world>|<real-id>
+gatewayserver2client protocol =
+<entity-id>:<entity-message>|
+:<world-message>
 
-message =
-Joined <word-representative> |
-Move <x> <y>
-Map <x-count> <y-count> <words>*x-count*x-count |
- 
+world-message:
+MAP <x-count> <y-count> <words>*x-count*x-count |
 
-client-gatewayserver protocol = <client-message>
+entity-message =
+JOIN <word-representative>|
+SPAWN <x> <y>|
+MOVE <x> <y>|
+ATTACK <entity-id>|
+DIE
+LEAVE
 
-client-message = 
-Join <Auth-info>|
-Move <x> <y>|
+client2gatewayserver protocol = <client-message>
 
-
+client-message =
+<Auth-info>|
+MOVE <x> <y>|

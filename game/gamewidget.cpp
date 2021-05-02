@@ -20,13 +20,14 @@ GameWidget::GameWidget(QWidget *parent):
 {
     initWidget();
 
-    auto player_Name = QString("p%1").arg(QRandomGenerator::global()->bounded(1,100000));
-    addMyself(player_Name);
+    model->myId= QString("p%1").arg(QRandomGenerator::global()->bounded(1,100000));
+    requestConnect();
 
     connect(kb,&KeyboardInput::goodKey,this,&GameWidget::handleGameInput);
-
+    //connect(netSys,&NetworkSystem::disconnected)
     connect(netSys,&NetworkSystem::addPlayerCommand, this, &GameWidget::addPlayer);
     connect(netSys,&NetworkSystem::movePlayerCommand,this, &GameWidget::movePlayer);
+    connect(netSys,&NetworkSystem::deletePlayerCommand,this,&GameWidget::deletePlayer);
 }
 
 void GameWidget::initWidget(){
@@ -34,27 +35,37 @@ void GameWidget::initWidget(){
     installEventFilter(kb);
 }
 
-void GameWidget::addMyself(const QString &playerName)
+void GameWidget::requestConnect()
 {
-    model->myName=playerName;
-    netSys->requestConnect(playerName,playerName);
+    netSys->requestConnect(model->myId);
 }
 
 void GameWidget::addPlayer(const QString &id, const QString &name, int x, int y)
 {
-    qDebug()<<id<<' '<<name;
+    qDebug()<<"addPlayer"<<id<<' '<<name;
     auto &players = model->players;
     auto it = players.constFind(id);
     if(it!=players.cend()){
-        qDebug()<<id<<' '<<name<<' '<<x<<' '<<y;
     }
     auto p = players[id] = model->addSimpleText(name);
     p->setPos(x,y);
-    qDebug()<<model->myName;
-    if(id==model->myName){
+    if(id==model->myId){
         model->myself=p;
         QVector<int> viewSize = ViewField(p,3);
         Horizon = model->addRect(viewSize[0],viewSize[2],viewSize[1]-viewSize[0]+50,viewSize[3]-viewSize[2]+50);
+    }
+}
+
+void GameWidget::deletePlayer(const QString &id)
+{
+    auto &players = model->players;
+    auto it = players.constFind(id);
+    if(it!=players.cend()){
+        if(id==model->myId){
+            model->myself=nullptr;
+        }
+        model->removeItem(it.value());
+        players.erase(it);
     }
 }
 
@@ -89,12 +100,13 @@ QVector<int> GameWidget::ViewField(QGraphicsSimpleTextItem *player_me,int n){
 
 void GameWidget::hit(char c,QGraphicsSimpleTextItem *player_me,int n){
     flag+=c;
+    qDebug()<<flag;
     QVector<int> size = ViewField(player_me,n);
     for (int i=0;i<hitText.size();i++) {
         model->removeItem(hitText[i]);
     }
     hitText.resize(0);
-    auto text=model->mapTextLayer;
+    auto &text=model->mapTextLayer;
     int left=size[0]/50;
     int right=size[1]/50;
     int up=size[2]/50;
@@ -104,7 +116,7 @@ void GameWidget::hit(char c,QGraphicsSimpleTextItem *player_me,int n){
         for(int j=up;j<=down;j++){
             if(flag==text[i][j]->text()){
                 flag ="";
-                netSys->requestMove(text[i][j]->x(),text[i][j]->y());
+                netSys->requestMove(text[i][j]->x(),text[i][j]->y()+10);
                 return;
             }
             if(flag == text[i][j]->text().mid(0,flag.length())){
@@ -127,6 +139,5 @@ void GameWidget::handleGameInput(int keyCode){
         return;
     }
 
-    int s = 3;
-    hit(keyCode,player_me,3);
+    hit(keyCode-('A'-'a'),player_me,3);
 }

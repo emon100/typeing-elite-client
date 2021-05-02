@@ -11,12 +11,13 @@ class NetworkSystem : public QTcpSocket
 public:
     explicit NetworkSystem(const QString &host, const int port, QObject *parent = nullptr);
 
-    void requestConnect(const QString &playerID, const QString &playerName);
+    void requestConnect(const QString &playerID);
     void requestMove(int x,int y);
 
 signals:
     void addPlayerCommand(QString playerId,QString playerName,int x,int y);
     void movePlayerCommand(QString playerId,int x,int y);
+    void deletePlayerCommand(QString playerId);
 
 private:
     void packageIntepreterMain(const QString &pkg);

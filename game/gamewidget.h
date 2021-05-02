@@ -22,10 +22,15 @@ public:
 
 
     void handleGameInput(int keyCode);
+
+    void addPlayer(const QString &id,const QString &name,int x,int y);
+    void movePlayer(const QString &name,int x,int y);
+    void deletePlayer(const QString &id);
+
 private:
     void initWidget();
     void hit(char c, QGraphicsSimpleTextItem *player_me, int n);
-    void addMyself(const QString &playerName);
+    void requestConnect();
 
     GameModel *model;
     GameView  *view;
@@ -34,9 +39,6 @@ private:
     NetworkSystem *netSys;
 
     QGraphicsRectItem *Horizon ;
-
-    void addPlayer(const QString &id,const QString &name,int x,int y);
-    void movePlayer(const QString &name,int x,int y);
 
     QVector<int> ViewField(QGraphicsSimpleTextItem *player_me,int size);
 
