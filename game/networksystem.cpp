@@ -29,14 +29,18 @@ void NetworkSystem::packageIntepreterMain(const QString &msg)
     if(sl.size()<2){
         return;
     }
-    auto &&sender = sl[0];
+    auto &&target = sl[0];
     auto &&instructions = sl[1].split(' ');
     if(instructions[0]=="JOIN"){
-        emit addPlayerCommand(sender, instructions[1], instructions[2].toInt(),instructions[3].toInt());
-    }else if (instructions[0] =="LEAVE"){
-        emit deletePlayerCommand(sender);
+        emit joinPlayerCommand(target, instructions[1]);
+    }else if (instructions[0] =="SPAWN"){
+        emit spawnPlayerCommand(target, instructions[1].toInt(),instructions[2].toInt());
     }else if(instructions[0]=="MOVE"){
-        emit movePlayerCommand(sl[0], instructions[1].toInt(),instructions[2].toInt());
+        emit movePlayerCommand(sl[0],instructions[1].toInt(),instructions[2].toInt());
+    }else if (instructions[0] =="KILL"){
+        emit killPlayerCommand(target);
+    }else if (instructions[0] =="LEAVE"){
+        emit leavePlayerCommand(target);
     }else{
         qDebug()<<"Bad msg: "<<msg;
     }

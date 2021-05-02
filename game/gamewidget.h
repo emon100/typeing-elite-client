@@ -23,13 +23,15 @@ public:
 
     void handleGameInput(int keyCode);
 
-    void addPlayer(const QString &id,const QString &name,int x,int y);
-    void movePlayer(const QString &name,int x,int y);
-    void deletePlayer(const QString &id);
+    void joinPlayer(const QString &id, const QString &name);
+    void movePlayer(const QString &id,int x,int y);
+    void killPlayer(const QString &id);
+    void leavePlayer(const QString &id);
 
 private:
     void initWidget();
     void hit(char c, QGraphicsSimpleTextItem *player_me, int n);
+    void dispatchNetworkActivity();
     void requestConnect();
 
     GameModel *model;

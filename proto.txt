@@ -14,7 +14,7 @@ JOIN <word-representative>|
 SPAWN <x> <y>|
 MOVE <x> <y>|
 ATTACK <entity-id>|
-DIE
+KILLED
 LEAVE
 
 client2gatewayserver protocol = <client-message>

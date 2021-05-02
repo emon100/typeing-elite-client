@@ -16,18 +16,14 @@ GameWidget::GameWidget(QWidget *parent):
     model(new GameModel(this)),
     view(new GameView(model,this)),
     kb(new KeyboardInput(this)),
-    netSys(new NetworkSystem("localhost", 8888,this))
+    netSys(new NetworkSystem("localhost",8888,this))
 {
     initWidget();
 
     model->myId= QString("p%1").arg(QRandomGenerator::global()->bounded(1,100000));
     requestConnect();
 
-    connect(kb,&KeyboardInput::goodKey,this,&GameWidget::handleGameInput);
-    //connect(netSys,&NetworkSystem::disconnected)
-    connect(netSys,&NetworkSystem::addPlayerCommand, this, &GameWidget::addPlayer);
-    connect(netSys,&NetworkSystem::movePlayerCommand,this, &GameWidget::movePlayer);
-    connect(netSys,&NetworkSystem::deletePlayerCommand,this,&GameWidget::deletePlayer);
+    dispatchNetworkActivity();
 }
 
 void GameWidget::initWidget(){
@@ -40,53 +36,68 @@ void GameWidget::requestConnect()
     netSys->requestConnect(model->myId);
 }
 
-void GameWidget::addPlayer(const QString &id, const QString &name, int x, int y)
+void GameWidget::joinPlayer(const QString &id, const QString &name)
 {
-    qDebug()<<"addPlayer"<<id<<' '<<name;
+    qDebug()<<"joinPlayer "<<id<<' '<<name;
     auto &players = model->players;
     auto it = players.constFind(id);
     if(it!=players.cend()){
+        qDebug()<<"player exists!"<<id;
+        return;
     }
     auto p = players[id] = model->addSimpleText(name);
-    p->setPos(x,y);
+    p->setVisible(false);
     if(id==model->myId){
         model->myself=p;
-        QVector<int> viewSize = ViewField(p,3);
-        Horizon = model->addRect(viewSize[0],viewSize[2],viewSize[1]-viewSize[0]+50,viewSize[3]-viewSize[2]+50);
+        Horizon = model->addRect(0,0,0,0);
+        Horizon->setVisible(false);
     }
 }
 
-void GameWidget::deletePlayer(const QString &id)
-{
-    auto &players = model->players;
-    auto it = players.constFind(id);
-    if(it!=players.cend()){
-        if(id==model->myId){
-            model->myself=nullptr;
-        }
-        model->removeItem(it.value());
-        players.erase(it);
-    }
-}
-
-
-void GameWidget::movePlayer(const QString &id, int x, int y)
+void GameWidget::movePlayer(const QString &id, int x,int y)
 {
     auto &players = model->players;
     auto it = players.find(id);
     if(it==players.end()){
-        qDebug()<<id<<' '<<x<<' '<<y;
+        qDebug()<<"player not found."<<id;
         return;
     }
-    it.value()->setPos(x,y);
-
-    if(*it==model->myself){
-        QVector<int> viewSize = ViewField(model->myself,3);
+    auto p = it.value();
+    p->setVisible(true);
+    p->setPos(x,y);
+    if(id==model->myId){
+        QVector<int> viewSize = ViewField(p,3);
         Horizon->setRect(viewSize[0],viewSize[2],viewSize[1]-viewSize[0]+50,viewSize[3]-viewSize[2]+50);
-        view->centerOn(model->myself->pos());
+        Horizon->setVisible(true);
     }
-
 }
+
+void GameWidget::killPlayer(const QString &id)
+{
+    qDebug()<<"killPlayer "<<id;
+    auto &players = model->players;
+    auto it = players.constFind(id);
+    if(it==players.cend()){
+        qDebug()<<"player not found."<<id;
+    }
+    it.value()->setVisible(false);
+}
+
+void GameWidget::leavePlayer(const QString &id)
+{
+    qDebug()<<"leavePlayer "<<id;
+    auto &players = model->players;
+    auto it = players.constFind(id);
+    if(it==players.cend()){
+        qDebug()<<"player not found."<<id;
+    }
+    if(id==model->myId){
+        model->myself=nullptr;
+    }
+    model->removeItem(it.value());
+    players.erase(it);
+}
+
 
 QVector<int> GameWidget::ViewField(QGraphicsSimpleTextItem *player_me,int n){
     int x=player_me->x();
@@ -131,6 +142,18 @@ void GameWidget::hit(char c,QGraphicsSimpleTextItem *player_me,int n){
     if(wu){
         flag ="";
     }
+}
+
+void GameWidget::dispatchNetworkActivity()
+{
+    connect(kb,&KeyboardInput::goodKey,this,&GameWidget::handleGameInput);
+    //TODO connect(netSys,&NetworkSystem::disconnected)
+    connect(netSys,&NetworkSystem::joinPlayerCommand, this, &GameWidget::joinPlayer);
+    connect(netSys,&NetworkSystem::spawnPlayerCommand, this, &GameWidget::movePlayer);//TODO
+    connect(netSys,&NetworkSystem::movePlayerCommand,this, &GameWidget::movePlayer);
+    connect(netSys,&NetworkSystem::killPlayerCommand,this, &GameWidget::killPlayer);
+    connect(netSys,&NetworkSystem::leavePlayerCommand,this,&GameWidget::leavePlayer);
+
 }
 
 void GameWidget::handleGameInput(int keyCode){

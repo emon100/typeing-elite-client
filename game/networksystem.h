@@ -15,9 +15,11 @@ public:
     void requestMove(int x,int y);
 
 signals:
-    void addPlayerCommand(QString playerId,QString playerName,int x,int y);
+    void joinPlayerCommand(QString playerId,QString playerName);
+    void spawnPlayerCommand(QString playerId,int x,int y);
     void movePlayerCommand(QString playerId,int x,int y);
-    void deletePlayerCommand(QString playerId);
+    void killPlayerCommand(QString playerId);
+    void leavePlayerCommand(QString playerId);
 
 private:
     void packageIntepreterMain(const QString &pkg);
