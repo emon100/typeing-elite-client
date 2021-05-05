@@ -13,13 +13,18 @@ NetworkSystem::NetworkSystem(const QString &host, const int port, QObject *paren
 
 void NetworkSystem::requestConnect(const QString &playerID)
 {
-    write(playerID.toLatin1().data());
+    write(playerID.toUtf8().data());
     write("\n",1);
 }
 
 void NetworkSystem::requestMove(int x, int y)
 {
-    write(QString("MOVE %2 %3\n").arg(x).arg(y).toLatin1());
+    write(QString("MOVE %2 %3\n").arg(x).arg(y).toUtf8());
+}
+
+void NetworkSystem::requestKill(const QString &playerID)
+{
+    write(QString("KILL %1\n").arg(playerID).toUtf8());
 }
 
 void NetworkSystem::packageIntepreterMain(const QString &msg)
@@ -38,7 +43,7 @@ void NetworkSystem::packageIntepreterMain(const QString &msg)
     }else if(instructions[0]=="MOVE"){
         emit movePlayerCommand(sl[0],instructions[1].toInt(),instructions[2].toInt());
     }else if (instructions[0] =="KILL"){
-        emit killPlayerCommand(target);
+        emit killPlayerCommand(target,instructions[1]);
     }else if (instructions[0] =="LEAVE"){
         emit leavePlayerCommand(target);
     }else{

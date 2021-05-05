@@ -25,14 +25,15 @@ public:
 
     void joinPlayer(const QString &id, const QString &name);
     void movePlayer(const QString &id,int x,int y);
-    void killPlayer(const QString &id);
+    void killPlayer(const QString &from, const QString &id);
     void leavePlayer(const QString &id);
 
 private:
     void initWidget();
-    void hit(char c, QGraphicsSimpleTextItem *player_me, int n);
+    void hit(char c, QGraphicsTextItem *player_me, int n);
     void dispatchNetworkActivity();
     void requestConnect();
+    QVector<int> ViewField(int x, int y, int n);
 
     GameModel *model;
     GameView  *view;
@@ -42,7 +43,6 @@ private:
 
     QGraphicsRectItem *Horizon ;
 
-    QVector<int> ViewField(QGraphicsSimpleTextItem *player_me,int size);
 
     QString flag;
     QVector<QGraphicsSimpleTextItem *> hitText;

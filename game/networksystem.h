@@ -13,12 +13,13 @@ public:
 
     void requestConnect(const QString &playerID);
     void requestMove(int x,int y);
+    void requestKill(const QString &playerID);
 
 signals:
     void joinPlayerCommand(QString playerId,QString playerName);
     void spawnPlayerCommand(QString playerId,int x,int y);
     void movePlayerCommand(QString playerId,int x,int y);
-    void killPlayerCommand(QString playerId);
+    void killPlayerCommand(QString from,QString to);
     void leavePlayerCommand(QString playerId);
 
 private:

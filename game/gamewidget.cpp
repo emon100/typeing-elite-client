@@ -8,6 +8,7 @@
 #include <QGraphicsSimpleTextItem>
 #include <QRandomGenerator>
 #include <QLineEdit>
+#include <QTransform>
 
 #include <QPropertyAnimation>
 
@@ -22,6 +23,13 @@ GameWidget::GameWidget(QWidget *parent):
 
     model->myId= QString("p%1").arg(QRandomGenerator::global()->bounded(1,100000));
     requestConnect();
+    auto minimap = new GameView(model,this);
+    minimap->setGeometry(810,0,350,350);
+
+    QTransform matrix;
+    matrix.scale(0.33,0.33);
+    minimap->setTransform(matrix);
+
 
     dispatchNetworkActivity();
 }
@@ -36,6 +44,11 @@ void GameWidget::requestConnect()
     netSys->requestConnect(model->myId);
 }
 
+void highLightPlayerName(QGraphicsTextItem *item,int highlightLen){
+    QString s = item->toPlainText();
+    item->setHtml(QString(R"(<span style="color:blue;font-size:35px;">%1</span><span style="color:red;font-size:30px;">%2</span>)")
+                            .arg(s.first(highlightLen),s.sliced(highlightLen)));
+}
 void GameWidget::joinPlayer(const QString &id, const QString &name)
 {
     qDebug()<<"joinPlayer "<<id<<' '<<name;
@@ -45,8 +58,13 @@ void GameWidget::joinPlayer(const QString &id, const QString &name)
         qDebug()<<"player exists!"<<id;
         return;
     }
-    auto p = players[id] = model->addSimpleText(name);
+    auto p = new QGraphicsTextItem();
     p->setVisible(false);
+    p->setData(0,id);
+    p->setPlainText(name);
+    highLightPlayerName(p,0);
+    model->addItem(p);
+    players[id] = p;
     if(id==model->myId){
         model->myself=p;
         Horizon = model->addRect(0,0,0,0);
@@ -66,13 +84,17 @@ void GameWidget::movePlayer(const QString &id, int x,int y)
     p->setVisible(true);
     p->setPos(x,y);
     if(id==model->myId){
-        QVector<int> viewSize = ViewField(p,3);
-        Horizon->setRect(viewSize[0],viewSize[2],viewSize[1]-viewSize[0]+50,viewSize[3]-viewSize[2]+50);
+        view->centerOn(x,y);
+        QVector<int> viewSize = ViewField(p->x(),p->y(),3);
+        QPen pen;
+        pen.setWidth(5);
+        Horizon->setPen(pen);
+        Horizon->setRect(viewSize[0]-4,viewSize[2]-2,viewSize[1]-viewSize[0]+50,viewSize[3]-viewSize[2]+50);
         Horizon->setVisible(true);
     }
 }
 
-void GameWidget::killPlayer(const QString &id)
+void GameWidget::killPlayer(const QString &from,const QString &id)
 {
     qDebug()<<"killPlayer "<<id;
     auto &players = model->players;
@@ -95,24 +117,26 @@ void GameWidget::leavePlayer(const QString &id)
         model->myself=nullptr;
     }
     model->removeItem(it.value());
+    delete it.value();
     players.erase(it);
 }
 
 
-QVector<int> GameWidget::ViewField(QGraphicsSimpleTextItem *player_me,int n){
-    int x=player_me->x();
-    int y=player_me->y();
+QVector<int> GameWidget::ViewField(int x,int y,int n){
+    int l = model->mapTextLayer.size()*50 -50;
+
     int left = x-50*n <0? 0:x-50*n;
-    int right = x+50*n;
+    int right = x+50*n> l?l:x+50*n;
     int up = y-50*n < 0 ? 0:y-50*n;
-    int down = y+50*n;
+    int down = y+50*n > l?l:y+50*n;
     return QVector<int>{left,right,up,down};
 }
 
-void GameWidget::hit(char c,QGraphicsSimpleTextItem *player_me,int n){
+
+void GameWidget::hit(char c,QGraphicsTextItem *player_me,int n){
     flag+=c;
     qDebug()<<flag;
-    QVector<int> size = ViewField(player_me,n);
+    QVector<int> size = ViewField(player_me->x(),player_me->y(),n);
     for (int i=0;i<hitText.size();i++) {
         model->removeItem(hitText[i]);
     }
@@ -127,10 +151,10 @@ void GameWidget::hit(char c,QGraphicsSimpleTextItem *player_me,int n){
         for(int j=up;j<=down;j++){
             if(flag==text[i][j]->text()){
                 flag ="";
-                netSys->requestMove(text[i][j]->x(),text[i][j]->y()+10);
+                netSys->requestMove(text[i][j]->x(),text[i][j]->y());
                 return;
             }
-            if(flag == text[i][j]->text().mid(0,flag.length())){
+             if(flag == text[i][j]->text().mid(0,flag.length())){
                 QGraphicsSimpleTextItem *t = model->addSimpleText(flag);
                 t->setBrush(QBrush(QColor(220, 20, 60)));
                 t->setPos(text[i][j]->x(),text[i][j]->y());
@@ -139,8 +163,30 @@ void GameWidget::hit(char c,QGraphicsSimpleTextItem *player_me,int n){
             }
         }
     }
+    for(auto &&it:model->players){
+        QString &&pt = it->toPlainText();
+        int x = it->x();
+        int y = it->y();
+        if(it->data(0).toString()==model->myId||
+                x<size[0]||x>size[1]||
+                y<size[2]||y>size[3]){
+            continue;
+        }
+        if(flag==pt){
+            flag="";
+            netSys->requestKill(it->data(0).toString());
+            highLightPlayerName(it,flag.length());
+            wu=false;
+        }if(flag==it->toPlainText().mid(0,flag.length())){
+            highLightPlayerName(it,flag.length());
+            wu=false;
+        }else{
+            highLightPlayerName(it,0);
+        }
+    }
+
     if(wu){
-        flag ="";
+        flag = c;
     }
 }
 

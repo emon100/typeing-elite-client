@@ -9,7 +9,7 @@ GameView::GameView(QGraphicsScene *scene,QWidget *parent):
     this->resize(WindowX,WindowY);
     this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    //this->rotate(10);
+    this->setInteractive(false);
     this->centerOn(0,0);
 }
 

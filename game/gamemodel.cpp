@@ -16,9 +16,9 @@ void GameModel::addBackground()
 
 void GameModel::addItemsGroups()
 {
-    const int N=64;
+    const int N=20;
     const int min_len = 3;
-    const int max_len = 8;
+    const int max_len = 7;
     auto & map = mapTextLayer;
     map.reserve(N);
     for(int i=0;i<N;++i){

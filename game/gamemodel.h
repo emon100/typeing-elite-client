@@ -2,7 +2,7 @@
 #define GAMEMODEL_H
 
 #include <QGraphicsScene>
-#include <QGraphicsSimpleTextItem>
+#include <QGraphicsTextItem>
 #include <QVector>
 
 class QGraphicsScene;
@@ -17,10 +17,10 @@ public:
     void makeMap();
 
     QVector<QVector<QGraphicsSimpleTextItem *>> mapTextLayer;
-    QMap<QString,QGraphicsSimpleTextItem *> players;
+    QMap<QString,QGraphicsTextItem *> players;
 
 
-    QGraphicsSimpleTextItem *myself=nullptr;
+    QGraphicsTextItem *myself=nullptr;
     QString myId;
 
     void addBackground();
