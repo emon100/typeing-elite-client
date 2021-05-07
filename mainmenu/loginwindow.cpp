@@ -3,13 +3,14 @@
 #include "game/gamewidget.h"
 #include <QTimer>
 #include <QPainter>
-LoginWindow::LoginWindow(QWidget *parent) :
+LoginWindow::LoginWindow(QString JWT,QWidget *parent) :
     QWidget(parent),
     ui(new Ui::LoginWindow)
 {
     ui->setupUi(this);
     this->setFixedSize(WindowX,WindowY);            //大小
     this->setWindowTitle("打字精英");      //title
+    this->JWT = JWT;
 
 }
 
@@ -32,12 +33,12 @@ void LoginWindow::on_BeginGameButton_clicked()
         gamewidget->show();
     });
     //TODO  返回
-//    connect(gamewidget,&GameWidget::GameBack,[=](){
-//        //选择隐藏
-//        delete gamewidget;
-//        //自身显示
-//        this->show();
-//    });
+    connect(gamewidget,&GameWidget::GameBack,[=](){
+        //选择隐藏
+        delete gamewidget;
+        //自身显示
+        this->show();
+    });
 }
 
 void LoginWindow::paintEvent(QPaintEvent *)

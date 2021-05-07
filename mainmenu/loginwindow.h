@@ -13,7 +13,7 @@ class LoginWindow : public QWidget
     Q_OBJECT
 
 public:
-    explicit LoginWindow(QWidget *parent = nullptr);
+    explicit LoginWindow(QString JWT,QWidget *parent = nullptr);
     ~LoginWindow();
     GameWidget *gamewidget;
 
@@ -29,6 +29,7 @@ private:
     void paintEvent(QPaintEvent *);    //绘图事件
     const int WindowX = 1200;
     const int WindowY = 800;
+    QString JWT;
 };
 
 #endif // LOGINWINDOW_H

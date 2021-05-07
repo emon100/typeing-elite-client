@@ -40,36 +40,43 @@ void MainWindow::on_LogInButton_clicked()
 {
     QString Id = this->ui->IdLineEdit->text();
     QString Password = this->ui->PasswordLineEdit->text();
-
+    if(Id==""||Password==""){
+        QMessageBox::warning(this,"warning","账号或密码不能为空");
+        return;
+    }
     QVariantMap map{{"username",Id},{"password",Password}};
     QNetworkRequest req(QUrl("http://192.168.137.1:3000/api/signin"));
     req.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
     QNetworkAccessManager *manager = new QNetworkAccessManager(this);
     manager->post(req,QJsonDocument(QJsonObject::fromVariantMap(map)).toJson());
 
-    connect(manager,&QNetworkAccessManager::finished,[](QNetworkReply *reply){
+    connect(manager,&QNetworkAccessManager::finished,[this](QNetworkReply *reply){
         QByteArray raw =  reply->readAll();
         QJsonDocument json = QJsonDocument::fromJson(raw);
 
         qDebug()<<json["success"].toBool();
         qDebug()<<json["token"].toString();
+
+        bool LogInRes = json["success"].toBool();
+        if(LogInRes == true){
+            this->ui->IdLineEdit->clear();
+            this->ui->PasswordLineEdit->clear();
+            this->hide();
+            loginwindow = new LoginWindow(json["token"].toString());
+            loginwindow->show();
+            connect(loginwindow,&LoginWindow::loginwindowback,[=](){
+                delete loginwindow;
+                this->show();
+            });
+        }
+        else{
+            QMessageBox::critical(this,"错误","账号或密码错误","重新输入");
+            this->ui->PasswordLineEdit->clear();
+        }
     });
 
-    bool LogInRes = true;
-    if(LogInRes == true){
-        this->hide();
-        loginwindow = new LoginWindow;
-        loginwindow->show();
 
-        connect(loginwindow,&LoginWindow::loginwindowback,[=](){
 
-            delete loginwindow;
-            this->show();
-        });
-    }
-    else{
-        QMessageBox::critical(this,"错误","账号密码错误","重新输入");
-    }
 
 }
 
