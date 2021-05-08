@@ -16,6 +16,7 @@ public:
     void requestKill(const QString &playerID);
 
 signals:
+    void verifyCommand(QString playerId);
     void joinPlayerCommand(QString playerId,QString playerName);
     void spawnPlayerCommand(QString playerId,int x,int y);
     void movePlayerCommand(QString playerId,int x,int y);

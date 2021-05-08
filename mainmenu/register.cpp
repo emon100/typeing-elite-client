@@ -7,7 +7,6 @@
 #include <QNetworkReply>
 #include <QNetworkAccessManager>
 #include <QVariantMap>
-#include <QRegExpValidator>
 Register::Register(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Register)
@@ -15,12 +14,6 @@ Register::Register(QWidget *parent) :
     ui->setupUi(this);
     this->setFixedSize(WindowX,WindowY);            //大小
     this->setWindowTitle("打字精英");      //title
-
-    QRegExp exp("[a-zA-Z0-9-_]+@[a-zA-Z0-9-_]+\\.[a-zA-Z]+");//正则表达式
-    QRegExpValidator *rval = new QRegExpValidator(exp);
-    this->ui->EmailLineEdit->setValidator(rval);
-
-
 
 }
 
@@ -37,24 +30,19 @@ void Register::on_RegisterButton_clicked()
     QString Password = this->ui->PasswordLineEdit->text();
     QString Phone = this->ui->PhoneLineEdit->text();
 
-    const QValidator *v = this->ui->EmailLineEdit->validator();
     int pos = 0;
 
-    QRegExp regx("^1([358][0-9]|4[579]|66|7[0135678]|9[89])[0-9]{8}$");
+  /*  QRegExp regx("^1([358][0-9]|4[579]|66|7[0135678]|9[89])[0-9]{8}$");
     QRegExpValidator regs(regx, 0);
     int posPhone = 0;
     QValidator::State res = regs.validate(Phone, posPhone);
+    */
 
     if(Id==""||Password==""||Email==""||Phone==""){
         QMessageBox::warning(this,"warning","信息不全！请完善！");
     }else if(Password.length()<6||Password.length()>16){
          QMessageBox::warning(this,"warning","请输入6到16位密码");
-    }else if(v->validate(Email, pos) != QValidator::Acceptable){
-        QMessageBox::warning(this,"warning","邮箱格式不正确");
-    }else if(QValidator::Acceptable != res){
-        QMessageBox::warning(this,"warning","手机号输入错误");
-    }
-    else{
+    }else{
         QVariantMap map{{"username",Id},{"password",Password},{"phoneNumber",Phone},{"email",Email}};
 
         QNetworkRequest req(QUrl("http://192.168.137.1:3000/api/signup"));

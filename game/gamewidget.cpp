@@ -12,36 +12,34 @@
 
 #include <QPropertyAnimation>
 
-GameWidget::GameWidget(QWidget *parent):
+GameWidget::GameWidget(QString host, int port, QString JWT,QWidget *parent):
     QWidget(parent),
     model(new GameModel(this)),
     view(new GameView(model,this)),
     kb(new KeyboardInput(this)),
-    netSys(new NetworkSystem("localhost",8888,this))
+    netSys(new NetworkSystem(host,port,this))
 {
     initWidget();
 
-    model->myId= QString("p%1").arg(QRandomGenerator::global()->bounded(1,100000));
-    requestConnect();
-    auto minimap = new GameView(model,this);
-    minimap->setGeometry(810,0,350,350);
-
-    QTransform matrix;
-    matrix.scale(0.33,0.33);
-    minimap->setTransform(matrix);
-
-
+    requestConnect(JWT);
     dispatchNetworkActivity();
 }
 
 void GameWidget::initWidget(){
     setWindowTitle("打字精英");
     installEventFilter(kb);
+
+    auto minimap = new GameView(model,this);
+    minimap->setGeometry(810,0,350,350);
+
+    QTransform matrix;
+    matrix.scale(0.33,0.33);
+    minimap->setTransform(matrix);
 }
 
-void GameWidget::requestConnect()
+void GameWidget::requestConnect(const QString &jwt)
 {
-    netSys->requestConnect(model->myId);
+    netSys->requestConnect(jwt);
 }
 
 void highLightPlayerName(QGraphicsTextItem *item,int highlightLen){
@@ -115,6 +113,9 @@ void GameWidget::leavePlayer(const QString &id)
     }
     if(id==model->myId){
         model->myself=nullptr;
+        if(Horizon){
+            model->removeItem(Horizon);
+        }
     }
     model->removeItem(it.value());
     delete it.value();
@@ -199,7 +200,7 @@ void GameWidget::dispatchNetworkActivity()
     connect(netSys,&NetworkSystem::movePlayerCommand,this, &GameWidget::movePlayer);
     connect(netSys,&NetworkSystem::killPlayerCommand,this, &GameWidget::killPlayer);
     connect(netSys,&NetworkSystem::leavePlayerCommand,this,&GameWidget::leavePlayer);
-
+    connect(netSys,&NetworkSystem::verifyCommand,this,&GameWidget::verified);
 }
 
 void GameWidget::handleGameInput(int keyCode){
@@ -209,4 +210,10 @@ void GameWidget::handleGameInput(int keyCode){
     }
 
     hit(keyCode-('A'-'a'),player_me,3);
+}
+
+void GameWidget::verified(const QString &id)
+{
+    model->myId=id;
+
 }

@@ -11,7 +11,6 @@ LoginWindow::LoginWindow(QString JWT,QWidget *parent) :
     this->setFixedSize(WindowX,WindowY);            //大小
     this->setWindowTitle("打字精英");      //title
     this->JWT = JWT;
-
 }
 
 LoginWindow::~LoginWindow()
