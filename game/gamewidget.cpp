@@ -45,7 +45,7 @@ void GameWidget::requestConnect(const QString &jwt)
 void highLightPlayerName(QGraphicsTextItem *item,int highlightLen){
     QString s = item->toPlainText();
     item->setHtml(QString(R"(<span style="color:blue;font-size:35px;">%1</span><span style="color:red;font-size:30px;">%2</span>)")
-                            .arg(s.first(highlightLen),s.sliced(highlightLen)));
+                            .arg(s.left(highlightLen),s.right(s.size()-highlightLen)));
 }
 void GameWidget::joinPlayer(const QString &id, const QString &name)
 {
@@ -107,8 +107,8 @@ void GameWidget::leavePlayer(const QString &id)
 {
     qDebug()<<"leavePlayer "<<id;
     auto &players = model->players;
-    auto it = players.constFind(id);
-    if(it==players.cend()){
+    auto it = players.find(id);
+    if(it==players.end()){
         qDebug()<<"player not found."<<id;
     }
     if(id==model->myId){

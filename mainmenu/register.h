@@ -2,6 +2,7 @@
 #define REGISTER_H
 
 #include <QWidget>
+
 namespace Ui {
 class Register;
 }

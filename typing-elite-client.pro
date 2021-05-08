@@ -1,5 +1,6 @@
 QT       += core gui \
-               network
+               network \
+               core5compat
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -39,6 +40,7 @@ HEADERS += \
     mainmenu/loginwindow.h \
     mainmenu/mainwindow.h \
     mainmenu/register.h \
+    mainmenu/allurl.h \
     servicelogic.h
 
 FORMS += \

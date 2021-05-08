@@ -5,8 +5,11 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QNetworkReply>
-#include <QNetworkAccessManager>
-#include <QVariantMap>
+#include <QRegExp>
+#include <QTimer>
+#include "allurl.h"
+
+using namespace std;
 Register::Register(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Register)
@@ -14,7 +17,10 @@ Register::Register(QWidget *parent) :
     ui->setupUi(this);
     this->setFixedSize(WindowX,WindowY);            //大小
     this->setWindowTitle("打字精英");      //title
-
+    this->ui->IdLineEdit->setPlaceholderText("请输入ID");
+    this->ui->PasswordLineEdit->setPlaceholderText("请输入6到16位密码");
+    this->ui->PhoneLineEdit->setPlaceholderText("请输入11位手机号");
+    this->ui->EmailLineEdit->setPlaceholderText("请输入邮箱");
 }
 
 Register::~Register()
@@ -30,27 +36,38 @@ void Register::on_RegisterButton_clicked()
     QString Password = this->ui->PasswordLineEdit->text();
     QString Phone = this->ui->PhoneLineEdit->text();
 
-    int pos = 0;
-
-  /*  QRegExp regx("^1([358][0-9]|4[579]|66|7[0135678]|9[89])[0-9]{8}$");
-    QRegExpValidator regs(regx, 0);
-    int posPhone = 0;
-    QValidator::State res = regs.validate(Phone, posPhone);
-    */
+    QRegExp exp("[a-zA-Z0-9-_]+@[a-zA-Z0-9-_]+\\.[a-zA-Z]+");//正则表达式
+    QRegExp regx("^1([358][0-9]|4[579]|66|7[0135678]|9[89])[0-9]{8}$");
 
     if(Id==""||Password==""||Email==""||Phone==""){
         QMessageBox::warning(this,"warning","信息不全！请完善！");
     }else if(Password.length()<6||Password.length()>16){
          QMessageBox::warning(this,"warning","请输入6到16位密码");
-    }else{
+    }else if(!exp.exactMatch(Email)){
+        QMessageBox::warning(this,"warning","邮箱格式不正确");
+    }else if(!regx.exactMatch(Phone)){
+        QMessageBox::warning(this,"warning","手机号输入错误");
+    }
+    else{
         QVariantMap map{{"username",Id},{"password",Password},{"phoneNumber",Phone},{"email",Email}};
-
-        QNetworkRequest req(QUrl("http://192.168.137.1:3000/api/signup"));
+        QUrl url(signupurl);
+        QNetworkRequest req(url);
         req.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
+
         QNetworkAccessManager *manager = new QNetworkAccessManager(this);
-        manager->post(req,QJsonDocument(QJsonObject::fromVariantMap(map)).toJson());
+        auto reply =  manager->post(req,QJsonDocument(QJsonObject::fromVariantMap(map)).toJson());
+
+        QTimer::singleShot(3000,this ,[=]()
+        {
+            if(reply->isFinished()==false){
+                QMessageBox::warning(this,"warning","连接失败");
+                reply->abort();
+                return;
+            }
+        });
 
         connect(manager,&QNetworkAccessManager::finished,[this](QNetworkReply *reply){
+
             QByteArray raw =  reply->readAll();
             QJsonDocument json = QJsonDocument::fromJson(raw);
 

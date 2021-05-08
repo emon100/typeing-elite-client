@@ -9,6 +9,8 @@
 #include <QNetworkReply>
 #include <QNetworkAccessManager>
 #include <QVariantMap>
+#include <QTimer>
+#include "allurl.h"
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -17,6 +19,8 @@ MainWindow::MainWindow(QWidget *parent) :
     this->setFixedSize(WindowX,WindowY);            //大小
     this->setWindowTitle("打字精英");      //title
     this->setWindowIcon(QPixmap(Logo));        //logo
+    this->ui->IdLineEdit->setPlaceholderText("请输入ID");
+    this->ui->PasswordLineEdit->setPlaceholderText("请输入密码");
 }
 
 MainWindow::~MainWindow()
@@ -45,10 +49,20 @@ void MainWindow::on_LogInButton_clicked()
         return;
     }
     QVariantMap map{{"username",Id},{"password",Password}};
-    QNetworkRequest req(QUrl("http://192.168.137.1:3000/api/signin"));
+    QUrl url(signinurl);
+    QNetworkRequest req(url);
     req.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
     QNetworkAccessManager *manager = new QNetworkAccessManager(this);
-    manager->post(req,QJsonDocument(QJsonObject::fromVariantMap(map)).toJson());
+    auto reply =  manager->post(req,QJsonDocument(QJsonObject::fromVariantMap(map)).toJson());
+
+    QTimer::singleShot(3000,this ,[=]()
+    {
+        if(reply->isFinished()==false){
+            QMessageBox::warning(this,"warning","连接失败");
+            reply->abort();
+            return;
+        }
+    });
 
     connect(manager,&QNetworkAccessManager::finished,[this](QNetworkReply *reply){
         QByteArray raw =  reply->readAll();
@@ -56,7 +70,7 @@ void MainWindow::on_LogInButton_clicked()
 
         qDebug()<<json["success"].toBool();
         qDebug()<<json["token"].toString();
-
+        qDebug()<<json["msg"].toString();
         bool LogInRes = json["success"].toBool();
         if(LogInRes == true){
             this->ui->IdLineEdit->clear();
@@ -70,13 +84,10 @@ void MainWindow::on_LogInButton_clicked()
             });
         }
         else{
-            QMessageBox::critical(this,"错误","账号或密码错误","重新输入");
+            QMessageBox::critical(this,"错误",json["msg"].toString(),"重新输入");
             this->ui->PasswordLineEdit->clear();
         }
     });
-
-
-
 
 }
 
