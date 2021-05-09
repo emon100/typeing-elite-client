@@ -18,7 +18,6 @@ DEFINES += QT_DEPRECATED_WARNINGS
 DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    game/gamemap.cpp \
     game/gamemodel.cpp \
     game/gameview.cpp \
     game/gamewidget.cpp \
@@ -32,7 +31,6 @@ SOURCES += \
     main.cpp
 
 HEADERS += \
-    game/gamemap.h \
     game/gamemodel.h \
     game/gameview.h \
     game/gamewidget.h \

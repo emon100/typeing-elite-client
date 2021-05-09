@@ -1,3 +1,4 @@
+#include "../mainmenu/allurl.h"
 #include "gamewidget.h"
 #include "gameview.h"
 #include "gamemodel.h"
@@ -30,7 +31,7 @@ GameWidget::GameWidget(QString host, int port, QString JWT,QWidget *parent):
 void GameWidget::initWidget(){
     setWindowTitle("打字精英");
     installEventFilter(kb);
-    setFixedSize(1200,800);
+    setFixedSize(::WindowX,::WindowY);
 
     auto minimap = new GameView(model,this);
     minimap->setGeometry(810,0,350,350);
@@ -247,7 +248,6 @@ void GameWidget::handleNetworkError(){
         box = new QMessageBox(QMessageBox::Critical,"网络错误","请重新连接",QMessageBox::Ok);
     }
     box->exec();
-    emit GameBack();
 }
 
 void GameWidget::handleGameInput(int keyCode){

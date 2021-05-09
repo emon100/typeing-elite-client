@@ -24,7 +24,7 @@ LoginWindow::LoginWindow(QString JWT,QWidget *parent) :
     this->setWindowTitle("打字精英");      //title
     this->JWT = JWT;
 
-    n=startTimer(1000);
+    n=startTimer(2000);
     this->ui->textEdit->setPlaceholderText("输入要发送的聊天内容");
     this->ui->textEdit->installEventFilter(this);
 
@@ -111,11 +111,15 @@ void LoginWindow::timerEvent(QTimerEvent *event)
     req.setRawHeader("authorization",JWT.toUtf8());
     auto reply = manager->get(req);
 
+    //TODO: This network part have some bugs.
     QTimer::singleShot(3000,this ,[=]()
     {
         if(reply->isFinished()==false&&flag){
-            QMessageBox::warning(this,"warning","连接失败");
             reply->abort();
+            killTimer(n);
+            if(QMessageBox::question(this,"连接失败","是否继续重连")==QMessageBox::StandardButton::Yes){
+                n=startTimer(2000);
+            }
             flag = false;
             return;
         }
