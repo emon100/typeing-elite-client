@@ -10,7 +10,9 @@
 #include <QNetworkAccessManager>
 #include <QVariantMap>
 #include <QTimer>
+#include <QKeyEvent>
 #include "allurl.h"
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -107,4 +109,40 @@ void MainWindow::on_RegisterButton_clicked()
 }
 void MainWindow::iSlot(QString GetData){
     qDebug()<<GetData;
+}
+
+void MainWindow::on_checkBox_stateChanged(int arg1)
+{
+    if(!arg1){
+        this->ui->PasswordLineEdit->setEchoMode(QLineEdit::Password);
+    }
+    else
+
+        this->ui->PasswordLineEdit->setEchoMode(QLineEdit::Normal);
+}
+void MainWindow::keyPressEvent(QKeyEvent *event){
+    switch(event->key()){
+    case Qt::Key_Return:
+        this->on_LogInButton_clicked();
+        break;
+    case Qt::Key_Enter:
+        this->on_LogInButton_clicked();
+        break;
+    }
+}
+
+void MainWindow::on_ChangePasswordPushButton_clicked()
+{
+    this->hide();
+    changepasswordwindow = new ChangePassword;
+    changepasswordwindow->show();
+    this->ui->IdLineEdit->clear();
+    this->ui->PasswordLineEdit->clear();
+    connect(changepasswordwindow,&ChangePassword::changepasswordwindowback,[=](){
+        //选择隐藏
+        delete changepasswordwindow;
+        //自身显示
+        this->show();
+    });
+
 }

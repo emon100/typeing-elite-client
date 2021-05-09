@@ -9,9 +9,11 @@
 #include <QRandomGenerator>
 #include <QLineEdit>
 #include <QTransform>
-
+#include <QLabel>
 #include <QPropertyAnimation>
-
+#include <QPushButton>
+#include <QTextBrowser>
+#include <QMessageBox>
 GameWidget::GameWidget(QString host, int port, QString JWT,QWidget *parent):
     QWidget(parent),
     model(new GameModel(this)),
@@ -28,6 +30,7 @@ GameWidget::GameWidget(QString host, int port, QString JWT,QWidget *parent):
 void GameWidget::initWidget(){
     setWindowTitle("打字精英");
     installEventFilter(kb);
+    setFixedSize(1200,800);
 
     auto minimap = new GameView(model,this);
     minimap->setGeometry(810,0,350,350);
@@ -35,6 +38,31 @@ void GameWidget::initWidget(){
     QTransform matrix;
     matrix.scale(0.33,0.33);
     minimap->setTransform(matrix);
+
+
+    QPushButton *BackButton = new QPushButton("退出游戏",this);
+
+    BackButton->move(810,600);
+
+    connect(BackButton,&QPushButton::clicked,[=](){
+        emit this->GameBack();
+    });
+
+    QTextBrowser *scoreLabel = new QTextBrowser(this);
+    scoreLabel->setText("当前得分:\n");
+    scoreLabel->move(810,370);
+    connect(netSys,&NetworkSystem::scoreUpdateCommand,[model=this->model,scoreLabel](QString id, QString name, int score){
+        auto &&playerScores = model->playerScores;
+        playerScores[name]=score;
+        QString now("当前得分\nid:分数\n");
+        for(auto it=playerScores.begin();it!=playerScores.end();++it){
+            now+=it.key();
+            now+=": ";
+            now+=QString::number(it.value());
+            now+='\n';
+        }
+        scoreLabel->setText(now);
+    });
 }
 
 void GameWidget::requestConnect(const QString &jwt)
@@ -193,14 +221,27 @@ void GameWidget::hit(char c,QGraphicsTextItem *player_me,int n){
 
 void GameWidget::dispatchNetworkActivity()
 {
+    connect(netSys,&NetworkSystem::errorOccurred,this,&GameWidget::handleNetworkError);
     connect(kb,&KeyboardInput::goodKey,this,&GameWidget::handleGameInput);
-    //TODO connect(netSys,&NetworkSystem::disconnected)
     connect(netSys,&NetworkSystem::joinPlayerCommand, this, &GameWidget::joinPlayer);
-    connect(netSys,&NetworkSystem::spawnPlayerCommand, this, &GameWidget::movePlayer);//TODO
+    connect(netSys,&NetworkSystem::spawnPlayerCommand, this, &GameWidget::movePlayer);
     connect(netSys,&NetworkSystem::movePlayerCommand,this, &GameWidget::movePlayer);
     connect(netSys,&NetworkSystem::killPlayerCommand,this, &GameWidget::killPlayer);
     connect(netSys,&NetworkSystem::leavePlayerCommand,this,&GameWidget::leavePlayer);
     connect(netSys,&NetworkSystem::verifyCommand,this,&GameWidget::verified);
+}
+
+void GameWidget::handleNetworkError(){
+    auto err = netSys->error();
+    qDebug()<<err;
+    QMessageBox *box;
+    if(err==NetworkSystem::RemoteHostClosedError){
+        box = new QMessageBox(QMessageBox::Critical,"服务器结束","此局游戏结束",QMessageBox::Ok);
+    }else{
+        box = new QMessageBox(QMessageBox::Critical,"网络错误","请重新连接",QMessageBox::Ok);
+    }
+    box->exec();
+    emit GameBack();
 }
 
 void GameWidget::handleGameInput(int keyCode){

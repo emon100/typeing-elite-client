@@ -26,6 +26,7 @@ private:
     Ui::Register *ui;
     const int WindowX = 1200;
     const int WindowY = 800;
+    void keyPressEvent(QKeyEvent *event);
 };
 
 #endif // REGISTER_H

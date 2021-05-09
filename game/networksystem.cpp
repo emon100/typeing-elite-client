@@ -48,6 +48,9 @@ void NetworkSystem::packageIntepreterMain(const QString &msg)
         emit killPlayerCommand(target,instructions[1]);
     }else if (instructions[0] =="LEAVE"){
         emit leavePlayerCommand(target);
+    }else if (instructions[0] =="NOWSCORE"){
+        emit scoreUpdateCommand(target, instructions[1],instructions[2].toInt());
+
     }else{
         qDebug()<<"Bad msg: "<<msg;
     }

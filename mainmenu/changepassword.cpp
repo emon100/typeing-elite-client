@@ -1,42 +1,50 @@
-#include "register.h"
-#include "ui_register.h"
+#include "changepassword.h"
+#include "ui_changepassword.h"
 #include <QMessageBox>
 #include <QNetworkRequest>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QNetworkReply>
-#include <QRegExp>
+#include <QNetworkAccessManager>
+#include <QVariantMap>
+#include <QMessageBox>
+#include <QJsonArray>
 #include <QTimer>
+#include <QRegExp>
 #include "allurl.h"
-#include <QKeyEvent>
-using namespace std;
-Register::Register(QWidget *parent) :
+ChangePassword::ChangePassword(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::Register)
+    ui(new Ui::ChangePassword)
 {
     ui->setupUi(this);
     this->setFixedSize(WindowX,WindowY);            //大小
     this->setWindowTitle("打字精英");      //title
-    this->ui->IdLineEdit->setPlaceholderText("请输入ID");
-    this->ui->PasswordLineEdit->setPlaceholderText("请输入6到16位密码");
-    this->ui->PhoneLineEdit->setPlaceholderText("请输入11位手机号");
-    this->ui->EmailLineEdit->setPlaceholderText("请输入邮箱");
-    this->ui->AgainPassword->setPlaceholderText("请再次输入密码");
+    this->ui->IDLineEdit->setPlaceholderText("请输入要修改账户的ID");
+    this->ui->PasswordLineEdit->setPlaceholderText("请输入修改后的密码");
+    this->ui->PhoneLineEdit->setPlaceholderText("请输入要修改账户的手机号");
+    this->ui->EmailLineEdit->setPlaceholderText("请输入要修改账户的邮箱");
+    this->ui->AgainPasswordLineEdit->setPlaceholderText("请再次输入密码");
 }
 
-Register::~Register()
+ChangePassword::~ChangePassword()
 {
     delete ui;
 }
 
-void Register::on_RegisterButton_clicked()
+void ChangePassword::on_BackPushButton_clicked()
 {
+    emit this->changepasswordwindowback();
+}
 
-    QString Id = this->ui->IdLineEdit->text();
+void ChangePassword::on_ChangePushButton_clicked()
+{
+    QString Id = this->ui->IDLineEdit->text();
+    QString Phone = this->ui->PhoneLineEdit->text();
     QString Email = this->ui->EmailLineEdit->text();
     QString Password = this->ui->PasswordLineEdit->text();
-    QString AgainPassword = this->ui->AgainPassword->text();
-    QString Phone = this->ui->PhoneLineEdit->text();
+    QString AgainPassword = this->ui->AgainPasswordLineEdit->text();
+
+
 
     QRegExp exp("[a-zA-Z0-9-_]+@[a-zA-Z0-9-_]+\\.[a-zA-Z]+");//正则表达式
     QRegExp regx("^1([358][0-9]|4[579]|66|7[0135678]|9[89])[0-9]{8}$");
@@ -53,8 +61,9 @@ void Register::on_RegisterButton_clicked()
         QMessageBox::warning(this,"warning","两次输入密码不一致请重新输入");
     }
     else{
-        QVariantMap map{{"username",Id},{"password",Password},{"phoneNumber",Phone},{"email",Email}};
-        QUrl url(signupurl);
+        QVariantMap map{{"username",Id},{"newPassword",Password},{"phoneNumber",Phone},{"email",Email}};
+
+        QUrl url(changepasswordurl);
         QNetworkRequest req(url);
         req.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
 
@@ -78,34 +87,17 @@ void Register::on_RegisterButton_clicked()
             qDebug()<<json["success"].toBool();
             qDebug()<<json["msg"].toString();
             if(json["success"].toBool()==true){
-                QMessageBox::about(this,"注册成功！",json["msg"].toString());
-                this->ui->IdLineEdit->clear();
+                QMessageBox::about(this,"修改成功！",json["msg"].toString());
+                this->ui->IDLineEdit->clear();
                 this->ui->EmailLineEdit->clear();
                 this->ui->PasswordLineEdit->clear();
                 this->ui->PhoneLineEdit->clear();
-                this->ui->AgainPassword->clear();
+                this->ui->AgainPasswordLineEdit->clear();
             }
             else{
                 QMessageBox::warning(this,"warning",json["msg"].toString());
             }
 
         });
-    }
-
-
-}
-
-void Register::on_BackButton_clicked()
-{
-    emit this->RegisterWindowBack();
-}
-void Register::keyPressEvent(QKeyEvent *event){
-    switch(event->key()){
-    case Qt::Key_Return:
-        this->on_RegisterButton_clicked();
-        break;
-    case Qt::Key_Enter:
-        this->on_RegisterButton_clicked();
-        break;
     }
 }

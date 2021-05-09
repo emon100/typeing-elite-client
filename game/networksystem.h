@@ -22,6 +22,7 @@ signals:
     void movePlayerCommand(QString playerId,int x,int y);
     void killPlayerCommand(QString from,QString to);
     void leavePlayerCommand(QString playerId);
+    void scoreUpdateCommand(QString playerId, QString playerName, int score);
 
 private:
     void packageIntepreterMain(const QString &pkg);

@@ -13,6 +13,8 @@
 #include <QMessageBox>
 #include <QJsonArray>
 #include "allurl.h"
+#include <QTextEdit>
+
 LoginWindow::LoginWindow(QString JWT,QWidget *parent) :
     QWidget(parent),
     ui(new Ui::LoginWindow)
@@ -23,6 +25,27 @@ LoginWindow::LoginWindow(QString JWT,QWidget *parent) :
     this->JWT = JWT;
 
     n=startTimer(1000);
+    this->ui->textEdit->setPlaceholderText("输入要发送的聊天内容");
+    this->ui->textEdit->installEventFilter(this);
+
+    this->ui->Name->setStyleSheet("color:white");
+    this->ui->Score->setStyleSheet("color:white");
+    this->ui->label->setStyleSheet("color:white");
+    this->ui->ChatLabel->setStyleSheet("color:white");
+    this->ui->Rank->setStyleSheet("color:white");
+
+    this->ui->ChangeName->setVisible(false);
+    this->ui->FinishChangeNameButton->setVisible(false);
+
+    rankitem = new QStandardItemModel(10,2);
+    this->ui->RankView->setModel(rankitem);
+
+    rankitem->setHeaderData(0,Qt::Horizontal, "昵称");
+    rankitem->setHeaderData(1,Qt::Horizontal, "分数");
+    UpdateInformation();
+
+
+
 
 }
 
@@ -88,13 +111,13 @@ void LoginWindow::timerEvent(QTimerEvent *event)
 
     QTimer::singleShot(3000,this ,[=]()
     {
-        if(reply->isFinished()==false){
+        if(reply->isFinished()==false&&flag){
             QMessageBox::warning(this,"warning","连接失败");
             reply->abort();
+            flag = false;
             return;
         }
     });
-
 
     connect(manager,&QNetworkAccessManager::finished,[this](QNetworkReply *reply){
         QByteArray raw =  reply->readAll();
@@ -136,16 +159,152 @@ void LoginWindow::on_Start_clicked()
                 this->hide();
                 gamewidget->show();
         });
+
+        connect(gamewidget,&GameWidget::GameBack,[=](){
+            UpdateInformation();
+            n=startTimer(1000);
+            //选择隐藏
+            delete gamewidget;
+            //自身显示
+            this->show();
+        });
     });
 
-    //TODO  返回
-    /*
-    connect(gamewidget,&GameWidget::GameBack,[=](){
-        //n=startTimer(1000);
-        //选择隐藏
-        delete gamewidget;
-        //自身显示
-        this->show();
+
+
+}
+
+void LoginWindow::on_Help_clicked()
+{
+    QMessageBox::about(this,"游戏帮助","点击开始游戏进入游戏，会获得红色的3个字母作为角色的"
+                                   "特征，如果被人敲打角色字母会死亡，响应的如果敲击敌人的3个字母"
+                                   "敌人就会死亡。能攻击敌人或者移动到某处当且仅当响应字母在黑色矩形框内");
+}
+
+
+bool LoginWindow::eventFilter(QObject *obj, QEvent *event)
+{
+    if(event->type() == QEvent::KeyPress){
+        QKeyEvent *e = static_cast<QKeyEvent *>(event);
+        if(e->key()==Qt::Key_Return||e->key()==Qt::Key_Enter){
+            if(this->ui->textEdit->toPlainText()!=""){
+                this->on_Send_clicked();
+            }
+            return true;
+        }else{
+            return QObject::eventFilter(obj, event);
+        }
+
+    }else{
+        return QObject::eventFilter(obj, event);
+    }
+}
+void LoginWindow::UpdateInformation(){
+    QUrl url(scoreurl);
+    QNetworkRequest req(url);
+    QNetworkAccessManager *manager = new QNetworkAccessManager(this);
+    req.setRawHeader("authorization",JWT.toUtf8());
+    auto reply = manager->get(req);
+
+    QTimer::singleShot(3000,this ,[=]()
+    {
+        if(reply->isFinished()==false){
+            QMessageBox::warning(this,"warning","开始失败");
+            reply->abort();
+            return;
+        }
     });
-    */
+    connect(manager,&QNetworkAccessManager::finished,[this](QNetworkReply *reply){
+        QByteArray raw =  reply->readAll();
+        QJsonDocument json = QJsonDocument::fromJson(raw);
+        flag = true;
+        //TODO json名
+        qDebug()<<json;
+        this->ui->Name->setText("昵称:"+json["nickname"].toString());
+        this->ui->Score->setText(QString("分数:%1").arg(json["score"].toInt()));
+
+    });
+
+
+    //TODO 排行榜
+    QUrl rankurl(getRankListurl);
+    QNetworkRequest rankreq(rankurl);
+    QNetworkAccessManager *rankmanager = new QNetworkAccessManager(this);
+    rankreq.setRawHeader("authorization",JWT.toUtf8());
+    auto rankreply = rankmanager->get(rankreq);
+
+    QTimer::singleShot(3000,this ,[=]()
+    {
+        if(rankreply->isFinished()==false){
+            QMessageBox::warning(this,"warning","开始失败");
+            rankreply->abort();
+            return;
+        }
+    });
+    connect(rankmanager,&QNetworkAccessManager::finished,[this](QNetworkReply *reply){
+        QByteArray raw =  reply->readAll();
+        QJsonDocument json = QJsonDocument::fromJson(raw);
+        flag = true;
+
+        auto jsonarray = json["rankList"].toArray();
+        for (int i=0;i<jsonarray.size();i++) {
+            qDebug()<<jsonarray[i].toObject()["score"].toInt();
+            rankitem->setItem(i, 0, new QStandardItem(jsonarray[i].toObject()["nickname"].toString()));
+            rankitem->setItem(i, 1, new QStandardItem(QString("%1").arg(jsonarray[i].toObject()["score"].toInt())));
+        }
+
+    });
+}
+
+void LoginWindow::on_FinishChangeNameButton_clicked()
+{
+    this->ui->ChangeNameButton->setVisible(true);
+    this->ui->Name->setVisible(true);
+    this->ui->ChangeName->setVisible(false);
+    this->ui->FinishChangeNameButton->setVisible(false);
+
+    QString Name = this->ui->ChangeName->text();
+    if(Name==""){
+         QMessageBox::warning(this,"warning","昵称不能为空修改失败");
+         return;
+    }
+
+    QVariantMap map{{"newNickname",Name}};
+    QUrl url(changenicknameurl);
+    QNetworkRequest req(url);
+    req.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
+    req.setRawHeader("authorization",JWT.toUtf8());
+    QNetworkAccessManager *manager = new QNetworkAccessManager(this);
+    auto reply =  manager->post(req,QJsonDocument(QJsonObject::fromVariantMap(map)).toJson());
+
+    QTimer::singleShot(3000,this ,[=]()
+    {
+        if(reply->isFinished()==false){
+            QMessageBox::warning(this,"warning","连接失败");
+            reply->abort();
+            return;
+        }
+    });
+
+    connect(manager,&QNetworkAccessManager::finished,[this](QNetworkReply *reply){
+        QByteArray raw =  reply->readAll();
+        QJsonDocument json = QJsonDocument::fromJson(raw);
+        if(json["success"].toBool()){
+            this->ui->Name->setText("昵称:"+this->ui->ChangeName->text());
+            UpdateInformation();
+        }
+        else {
+            QMessageBox::warning(this,"warning",json["msg"].toString());
+        }
+    });
+
+
+}
+
+void LoginWindow::on_ChangeNameButton_clicked()
+{
+    this->ui->ChangeNameButton->setVisible(false);
+    this->ui->Name->setVisible(false);
+    this->ui->ChangeName->setVisible(true);
+    this->ui->FinishChangeNameButton->setVisible(true);
 }

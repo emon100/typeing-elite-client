@@ -2,7 +2,7 @@
 #define LOGINWINDOW_H
 
 #include <QWidget>
-
+#include <QStandardItem>
 class GameWidget;
 
 namespace Ui {
@@ -26,6 +26,12 @@ private slots:
 
     void on_Exit_clicked();
 
+    void on_Help_clicked();
+
+    void on_FinishChangeNameButton_clicked();
+
+    void on_ChangeNameButton_clicked();
+
 signals:
     void loginwindowback();
 private:
@@ -33,10 +39,14 @@ private:
     QString backgroud =":/Logo/Logo/BackGround.jpg";
     void paintEvent(QPaintEvent *);    //绘图事件
     void timerEvent(QTimerEvent *event);
+    bool eventFilter(QObject *obj, QEvent *event);
     const int WindowX = 1200;
     const int WindowY = 800;
     QString JWT;
     int n;
+    void UpdateInformation();
+    bool flag = true;
+    QStandardItemModel *rankitem;
 
 };
 

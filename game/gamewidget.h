@@ -49,6 +49,7 @@ private:
 
     QString flag;
     QVector<QGraphicsSimpleTextItem *> hitText;
+    void handleNetworkError();
 };
 
 #endif // GAMEWIDGET_H

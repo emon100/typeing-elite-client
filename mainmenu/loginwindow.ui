@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>733</width>
-    <height>619</height>
+    <width>1200</width>
+    <height>800</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,10 +16,10 @@
   <widget class="QWidget" name="centralWidget" native="true">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>20</y>
-     <width>641</width>
-     <height>528</height>
+     <x>0</x>
+     <y>0</y>
+     <width>1201</width>
+     <height>801</height>
     </rect>
    </property>
    <widget class="QPushButton" name="Start">
@@ -39,7 +39,7 @@
     <property name="geometry">
      <rect>
       <x>520</x>
-      <y>310</y>
+      <y>320</y>
       <width>93</width>
       <height>28</height>
      </rect>
@@ -61,24 +61,11 @@
      <string>退出游戏</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="Send">
+   <widget class="QLabel" name="Score">
     <property name="geometry">
      <rect>
-      <x>330</x>
-      <y>490</y>
-      <width>93</width>
-      <height>28</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>发送</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="Level">
-    <property name="geometry">
-     <rect>
-      <x>490</x>
-      <y>140</y>
+      <x>580</x>
+      <y>130</y>
       <width>131</width>
       <height>21</height>
      </rect>
@@ -89,26 +76,26 @@
      </font>
     </property>
     <property name="text">
-     <string>等级</string>
+     <string>分数:</string>
     </property>
    </widget>
    <widget class="QTextBrowser" name="Message">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>10</y>
-      <width>401</width>
-      <height>381</height>
+      <x>10</x>
+      <y>50</y>
+      <width>451</width>
+      <height>341</height>
      </rect>
     </property>
    </widget>
    <widget class="QLabel" name="Name">
     <property name="geometry">
      <rect>
-      <x>490</x>
-      <y>100</y>
-      <width>131</width>
-      <height>21</height>
+      <x>580</x>
+      <y>80</y>
+      <width>151</width>
+      <height>31</height>
      </rect>
     </property>
     <property name="font">
@@ -117,13 +104,13 @@
      </font>
     </property>
     <property name="text">
-     <string>昵称</string>
+     <string>昵称:</string>
     </property>
    </widget>
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>490</x>
+      <x>580</x>
       <y>20</y>
       <width>131</width>
       <height>41</height>
@@ -144,11 +131,81 @@
    <widget class="QTextEdit" name="textEdit">
     <property name="geometry">
      <rect>
-      <x>20</x>
+      <x>10</x>
       <y>400</y>
-      <width>401</width>
-      <height>71</height>
+      <width>451</width>
+      <height>111</height>
      </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="Send">
+    <property name="geometry">
+     <rect>
+      <x>370</x>
+      <y>510</y>
+      <width>93</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>发送</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="ChatLabel">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>20</y>
+      <width>101</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>16</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+      <strikeout>false</strikeout>
+     </font>
+    </property>
+    <property name="text">
+     <string>聊天大厅</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="ChangeNameButton">
+    <property name="geometry">
+     <rect>
+      <x>490</x>
+      <y>80</y>
+      <width>81</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>修改昵称</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="ChangeName">
+    <property name="geometry">
+     <rect>
+      <x>580</x>
+      <y>80</y>
+      <width>161</width>
+      <height>31</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="FinishChangeNameButton">
+    <property name="geometry">
+     <rect>
+      <x>490</x>
+      <y>80</y>
+      <width>81</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>完成修改</string>
     </property>
    </widget>
   </widget>
@@ -179,6 +236,40 @@
      <y>0</y>
      <width>3</width>
      <height>27</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="Rank">
+   <property name="geometry">
+    <rect>
+     <x>940</x>
+     <y>90</y>
+     <width>51</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>16</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+     <strikeout>false</strikeout>
+    </font>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">white</string>
+   </property>
+   <property name="text">
+    <string>排行榜</string>
+   </property>
+  </widget>
+  <widget class="QTableView" name="RankView">
+   <property name="geometry">
+    <rect>
+     <x>850</x>
+     <y>130</y>
+     <width>231</width>
+     <height>331</height>
     </rect>
    </property>
   </widget>

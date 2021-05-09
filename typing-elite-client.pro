@@ -26,6 +26,7 @@ SOURCES += \
     game/networksystem.cpp \
     mainmenu/loginwindow.cpp \
     mainmenu/mainwindow.cpp \
+    mainmenu/changepassword.cpp \
     mainmenu/register.cpp \
     servicelogic.cpp \
     main.cpp
@@ -39,11 +40,13 @@ HEADERS += \
     game/keyboardinput.h \
     mainmenu/loginwindow.h \
     mainmenu/mainwindow.h \
+    mainmenu/changepassword.h \
     mainmenu/register.h \
     mainmenu/allurl.h \
     servicelogic.h
 
 FORMS += \
+    mainmenu/changepassword.ui \
     mainmenu/loginwindow.ui \
     mainmenu/mainwindow.ui \
     mainmenu/register.ui

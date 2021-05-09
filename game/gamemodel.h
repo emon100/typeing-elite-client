@@ -18,6 +18,7 @@ public:
 
     QVector<QVector<QGraphicsSimpleTextItem *>> mapTextLayer;
     QMap<QString,QGraphicsTextItem *> players;
+    QMap<QString,int> playerScores;
 
 
     QGraphicsTextItem *myself=nullptr;
