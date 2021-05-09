@@ -1,5 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "loginwindow.h"
+#include "register.h"
+#include "changepassword.h"
 #include <QPainter>
 #include <QDebug>
 #include <QMessageBox>
@@ -11,7 +14,6 @@
 #include <QVariantMap>
 #include <QTimer>
 #include <QKeyEvent>
-#include "allurl.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),

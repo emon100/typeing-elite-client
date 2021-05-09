@@ -23,6 +23,7 @@ signals:
     void killPlayerCommand(QString from,QString to);
     void leavePlayerCommand(QString playerId);
     void scoreUpdateCommand(QString playerId, QString playerName, int score);
+    void remainingTimeUpdate(int remainTime);
 
 private:
     void packageIntepreterMain(const QString &pkg);

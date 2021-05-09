@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QStandardItem>
+#include "allurl.h"
 class GameWidget;
 
 namespace Ui {
@@ -40,8 +41,8 @@ private:
     void paintEvent(QPaintEvent *);    //绘图事件
     void timerEvent(QTimerEvent *event);
     bool eventFilter(QObject *obj, QEvent *event);
-    const int WindowX = 1200;
-    const int WindowY = 800;
+    const int WindowX = ::WindowX;
+    const int WindowY = ::WindowY;
     QString JWT;
     int n;
     void UpdateInformation();

@@ -40,6 +40,8 @@ LoginWindow::LoginWindow(QString JWT,QWidget *parent) :
     rankitem = new QStandardItemModel(10,2);
     this->ui->RankView->setModel(rankitem);
 
+    this->ui->RankView->setSelectionMode( QAbstractItemView::NoSelection);
+    this->ui->RankView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     rankitem->setHeaderData(0,Qt::Horizontal, "昵称");
     rankitem->setHeaderData(1,Qt::Horizontal, "分数");
     UpdateInformation();
@@ -291,6 +293,8 @@ void LoginWindow::on_FinishChangeNameButton_clicked()
         QJsonDocument json = QJsonDocument::fromJson(raw);
         if(json["success"].toBool()){
             this->ui->Name->setText("昵称:"+this->ui->ChangeName->text());
+            this->JWT=json["newJWT"].toString();
+            qDebug()<<this->JWT;
             UpdateInformation();
         }
         else {

@@ -19,6 +19,7 @@ ChangePassword::ChangePassword(QWidget *parent) :
     ui->setupUi(this);
     this->setFixedSize(WindowX,WindowY);            //大小
     this->setWindowTitle("打字精英");      //title
+    this->setWindowIcon(QPixmap(Logo));        //logo
     this->ui->IDLineEdit->setPlaceholderText("请输入要修改账户的ID");
     this->ui->PasswordLineEdit->setPlaceholderText("请输入修改后的密码");
     this->ui->PhoneLineEdit->setPlaceholderText("请输入要修改账户的手机号");
@@ -100,4 +101,14 @@ void ChangePassword::on_ChangePushButton_clicked()
 
         });
     }
+}//背景
+void ChangePassword::paintEvent(QPaintEvent *)
+{
+    QPixmap pix;            //创建一个对象
+    QPainter painter(this);    //画家 在this上画画
+    painter.drawPixmap(0,0,this->width(),this->height(),pix) ;
+    pix.load(Logo);
+    pix=pix.scaled(pix.width()*2,pix.height()*2);
+    painter.drawPixmap((this->width()-pix.width())/2,0,pix) ;
 }
+

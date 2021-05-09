@@ -50,7 +50,8 @@ void NetworkSystem::packageIntepreterMain(const QString &msg)
         emit leavePlayerCommand(target);
     }else if (instructions[0] =="NOWSCORE"){
         emit scoreUpdateCommand(target, instructions[1],instructions[2].toInt());
-
+    }else if(instructions[0] =="REMAININGTIME"){
+        emit remainingTimeUpdate(instructions[1].toInt());
     }else{
         qDebug()<<"Bad msg: "<<msg;
     }

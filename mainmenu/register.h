@@ -2,7 +2,8 @@
 #define REGISTER_H
 
 #include <QWidget>
-
+#include "allurl.h"
+#include <QPainter>
 namespace Ui {
 class Register;
 }
@@ -24,9 +25,10 @@ signals:
     void RegisterWindowBack();
 private:
     Ui::Register *ui;
-    const int WindowX = 1200;
-    const int WindowY = 800;
+    const int WindowX = ::WindowX;
+    const int WindowY = ::WindowY;
     void keyPressEvent(QKeyEvent *event);
+    void paintEvent(QPaintEvent *);    //绘图事件
 };
 
 #endif // REGISTER_H

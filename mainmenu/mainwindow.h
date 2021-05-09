@@ -2,13 +2,15 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "loginwindow.h"
-#include "register.h"
-#include "changepassword.h"
+#include "allurl.h"
 
 namespace Ui {
 class MainWindow;
 }
+
+class LoginWindow;
+class Register;
+class ChangePassword;
 
 class MainWindow : public QMainWindow
 {
@@ -24,8 +26,6 @@ public:
 private slots:
     void on_LogInButton_clicked();
 
-
-
     void on_RegisterButton_clicked();
 
     void on_checkBox_stateChanged(int arg1);
@@ -34,11 +34,11 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
-    const QString Logo=":/Logo/Logo/TypeMaster.jpg";
+
     void paintEvent(QPaintEvent *);    //绘图事件
     void keyPressEvent(QKeyEvent *event);
-    const int WindowX = 1200;
-    const int WindowY = 800;
+    const int WindowX =::WindowX;
+    const int WindowY =::WindowY;
     void iSlot(QString GetData);
 };
 

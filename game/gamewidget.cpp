@@ -229,6 +229,12 @@ void GameWidget::dispatchNetworkActivity()
     connect(netSys,&NetworkSystem::killPlayerCommand,this, &GameWidget::killPlayer);
     connect(netSys,&NetworkSystem::leavePlayerCommand,this,&GameWidget::leavePlayer);
     connect(netSys,&NetworkSystem::verifyCommand,this,&GameWidget::verified);
+    QLabel *remaintimeLabel = new QLabel(this);
+    remaintimeLabel->move(900,600);
+    connect(netSys,&NetworkSystem::remainingTimeUpdate,[remaintimeLabel](int time){
+        remaintimeLabel->setText(QString("剩余时间: %1").arg(time));
+        remaintimeLabel->setFixedWidth(100);
+    });
 }
 
 void GameWidget::handleNetworkError(){

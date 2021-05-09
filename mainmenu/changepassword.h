@@ -2,7 +2,7 @@
 #define CHANGEPASSWORD_H
 
 #include <QWidget>
-
+#include <QPainter>
 namespace Ui {
 class ChangePassword;
 }
@@ -23,6 +23,7 @@ private slots:
 
 private:
     Ui::ChangePassword *ui;
+    void paintEvent(QPaintEvent *);    //绘图事件
 };
 
 #endif // CHANGEPASSWORD_H

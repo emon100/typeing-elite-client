@@ -17,6 +17,7 @@ Register::Register(QWidget *parent) :
     ui->setupUi(this);
     this->setFixedSize(WindowX,WindowY);            //大小
     this->setWindowTitle("打字精英");      //title
+    this->setWindowIcon(QPixmap(Logo));        //logo
     this->ui->IdLineEdit->setPlaceholderText("请输入ID");
     this->ui->PasswordLineEdit->setPlaceholderText("请输入6到16位密码");
     this->ui->PhoneLineEdit->setPlaceholderText("请输入11位手机号");
@@ -108,4 +109,13 @@ void Register::keyPressEvent(QKeyEvent *event){
         this->on_RegisterButton_clicked();
         break;
     }
+}
+void Register::paintEvent(QPaintEvent *)
+{
+    QPixmap pix;            //创建一个对象
+    QPainter painter(this);    //画家 在this上画画
+    painter.drawPixmap(0,0,this->width(),this->height(),pix) ;
+    pix.load(Logo);
+    pix=pix.scaled(pix.width()*2,pix.height()*2);
+    painter.drawPixmap((this->width()-pix.width())/2,0,pix) ;
 }
