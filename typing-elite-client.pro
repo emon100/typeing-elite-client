@@ -1,5 +1,6 @@
 QT       += core gui \
                network \
+               websockets \
                core5compat
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -23,25 +24,27 @@ SOURCES += \
     game/gamewidget.cpp \
     game/keyboardinput.cpp \
     game/networksystem.cpp \
+    game/tcpnetworksystem.cpp \
+    game/websocketnetworksystem.cpp \
     mainmenu/loginwindow.cpp \
     mainmenu/mainwindow.cpp \
     mainmenu/changepassword.cpp \
     mainmenu/register.cpp \
     servicelogic.cpp \
-    main.cpp
+    main.cpp \
 
 HEADERS += \
     game/gamemodel.h \
     game/gameview.h \
     game/gamewidget.h \
-    game/networksystem.h \
     game/keyboardinput.h \
+    game/networksystem.h \
     mainmenu/loginwindow.h \
     mainmenu/mainwindow.h \
     mainmenu/changepassword.h \
     mainmenu/register.h \
     mainmenu/allurl.h \
-    servicelogic.h
+    servicelogic.h \
 
 FORMS += \
     mainmenu/changepassword.ui \

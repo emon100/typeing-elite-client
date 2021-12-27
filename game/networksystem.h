@@ -3,19 +3,20 @@
 
 #include<QTcpSocket>
 
-class NetworkSystem : public QTcpSocket
-{
+class NetworkSystem : public QObject {
     Q_OBJECT
-
-
 public:
-    explicit NetworkSystem(const QString &host, const int port, QObject *parent = nullptr);
+    static NetworkSystem *TcpNetworkSystemBuilder(const QString &host, const int port, QObject *parent);
+    static NetworkSystem *WebsocketNetworkSystemBuilder(const QString &url, QObject *parent);
 
-    void requestConnect(const QString &playerID);
-    void requestMove(int x,int y);
-    void requestKill(const QString &playerID);
+    std::function<QAbstractSocket::SocketError()> error;
+
+    std::function<void (const QString &playerID)>requestConnect;
+    std::function<void (const QString &playerID)>requestKill;
+    std::function<void (int x,int y)>requestMove;
 
 signals:
+    void errorOccurred();
     void verifyCommand(QString playerId);
     void joinPlayerCommand(QString playerId,QString playerName);
     void spawnPlayerCommand(QString playerId,int x,int y);
@@ -27,9 +28,7 @@ signals:
 
 private:
     void packageIntepreterMain(const QString &pkg);
-    void GetToken(const QString &get);
-    QString Having;
-
+    explicit NetworkSystem(QObject *parent = nullptr);
 };
 
 #endif // NETWORKSYSTEM_H

@@ -20,7 +20,7 @@ GameWidget::GameWidget(QString host, int port, QString JWT,QWidget *parent):
     model(new GameModel(this)),
     view(new GameView(model,this)),
     kb(new KeyboardInput(this)),
-    netSys(new NetworkSystem(host,port,this))
+    netSys(NetworkSystem::TcpNetworkSystemBuilder(host, port, this))
 {
     initWidget();
 
@@ -52,7 +52,7 @@ void GameWidget::initWidget(){
     QTextBrowser *scoreLabel = new QTextBrowser(this);
     scoreLabel->setText("当前得分:\n");
     scoreLabel->move(810,370);
-    connect(netSys,&NetworkSystem::scoreUpdateCommand,[model=this->model,scoreLabel](QString id, QString name, int score){
+    connect(netSys,&NetworkSystem::scoreUpdateCommand,[model=this->model,scoreLabel](QString /*id*/, QString name, int score){
         auto &&playerScores = model->playerScores;
         playerScores[name]=score;
         QString now("当前得分\nid:分数\n");
@@ -121,7 +121,7 @@ void GameWidget::movePlayer(const QString &id, int x,int y)
     }
 }
 
-void GameWidget::killPlayer(const QString &from,const QString &id)
+void GameWidget::killPlayer(const QString &/*from*/,const QString &id)
 {
     qDebug()<<"killPlayer "<<id;
     auto &players = model->players;
@@ -232,7 +232,7 @@ void GameWidget::dispatchNetworkActivity()
     connect(netSys,&NetworkSystem::verifyCommand,this,&GameWidget::verified);
     QLabel *remaintimeLabel = new QLabel(this);
     remaintimeLabel->move(900,600);
-    connect(netSys,&NetworkSystem::remainingTimeUpdate,[remaintimeLabel](int time){
+    connect(netSys,&NetworkSystem::remainingTimeUpdate, this, [remaintimeLabel](int time){
         remaintimeLabel->setText(QString("剩余时间: %1").arg(time));
         remaintimeLabel->setFixedWidth(100);
     });
@@ -242,7 +242,7 @@ void GameWidget::handleNetworkError(){
     auto err = netSys->error();
     qDebug()<<err;
     QMessageBox *box;
-    if(err==NetworkSystem::RemoteHostClosedError){
+    if(err==QAbstractSocket::RemoteHostClosedError){
         box = new QMessageBox(QMessageBox::Critical,"服务器结束","此局游戏结束",QMessageBox::Ok);
     }else{
         box = new QMessageBox(QMessageBox::Critical,"网络错误","请重新连接",QMessageBox::Ok);
